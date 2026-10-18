@@ -31,7 +31,7 @@ class _AppHandler(BaseHTTPRequestHandler):
         self.wfile.write(content)
 
     def do_POST(self) -> None:
-        if self.path != "/api/extract":
+        if self.path not in {"/api/extract", "/api/ingest"}:
             self._send_json(404, {"error": "Rota nao encontrada."})
             return
 
@@ -60,7 +60,29 @@ class _AppHandler(BaseHTTPRequestHandler):
             self._send_json(400, {"error": "O campo 'text' deve ser um texto."})
             return
 
-        self._send_json(200, {"fields": extract_fields(payload["text"])})
+        text = payload["text"]
+        if not text.strip():
+            self._send_json(400, {"error": "O campo 'text' nao pode estar vazio."})
+            return
+
+        device_id = payload.get("device_id")
+        if device_id is not None and (
+            not isinstance(device_id, str) or not device_id.strip() or len(device_id) > 100
+        ):
+            self._send_json(
+                400,
+                {"error": "O campo 'device_id' deve ser um texto de 1 a 100 caracteres."},
+            )
+            return
+
+        response: dict[str, object] = {
+            "ok": True,
+            "message": "Texto recebido e processado.",
+            "fields": extract_fields(text),
+        }
+        if device_id is not None:
+            response["device_id"] = device_id.strip()
+        self._send_json(200, response)
 
     def _send_json(self, status: int, payload: dict[str, object]) -> None:
         content = json.dumps(payload, ensure_ascii=False).encode("utf-8")

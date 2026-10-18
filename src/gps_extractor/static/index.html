@@ -41,12 +41,17 @@
             placeholder="Cole ou digite aqui o texto que deseja analisar..." required>Ocorrência em 18/10/2026 09:55 nas coordenadas -25.428470, -49.273460 placa ABC1D23</textarea>
           <div class="input-footer">
             <span id="char-count">0 caracteres</span>
-            <button class="primary-button" type="submit">
-              Analisar texto
-              <svg viewBox="0 0 20 20" aria-hidden="true">
-                <path d="M4 10h11M10 5l5 5-5 5" />
-              </svg>
-            </button>
+            <div class="button-group">
+              <button class="secondary-button" id="send-api" type="button">
+                Testar envio HTTP
+              </button>
+              <button class="primary-button" type="submit">
+                Analisar texto
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M4 10h11M10 5l5 5-5 5" />
+                </svg>
+              </button>
+            </div>
           </div>
         </form>
 
@@ -62,7 +67,7 @@
         </section>
 
         <p id="status-message" class="status-message" role="status">
-          Seus dados são processados localmente neste protótipo.
+          A análise no navegador não envia os dados para um servidor.
         </p>
       </section>
 

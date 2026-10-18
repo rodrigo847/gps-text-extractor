@@ -49,6 +49,40 @@ class ServerTests(unittest.TestCase):
                 "placa": "ABC1D23",
             },
         )
+        self.assertTrue(payload["ok"])
+
+    def test_ingest_endpoint_returns_device_response(self):
+        request = Request(
+            f"{self.base_url}/api/ingest",
+            data=json.dumps(
+                {
+                    "device_id": "gps-demo-01",
+                    "text": "18/10/2026 09:55 -25.428470, -49.273460 ABC1D23",
+                }
+            ).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urlopen(request) as response:
+            payload = json.loads(response.read())
+
+        self.assertEqual(response.status, 200)
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["device_id"], "gps-demo-01")
+        self.assertEqual(payload["message"], "Texto recebido e processado.")
+        self.assertEqual(payload["fields"]["placa"], "ABC1D23")
+
+    def test_ingest_endpoint_rejects_empty_text(self):
+        request = Request(
+            f"{self.base_url}/api/ingest",
+            data=b'{"text":"  "}',
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with self.assertRaises(HTTPError) as error:
+            urlopen(request)
+
+        self.assertEqual(error.exception.code, 400)
 
     def test_extract_endpoint_rejects_invalid_payload(self):
         request = Request(

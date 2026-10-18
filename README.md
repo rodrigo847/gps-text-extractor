@@ -38,9 +38,57 @@ ative o modo de dispositivo (`Ctrl+Shift+M`). O texto de exemplo ja vem
 preenchido. Para encerrar o servidor, volte ao terminal e pressione `Ctrl+C`.
 
 Esse modo testa a interface em tamanhos de celular, mas nao simula recursos
-nativos como camera, GPS do aparelho ou notificacoes. A interface web executa
-a extracao localmente no navegador; o servidor Python local tambem disponibiliza
-uma API simples para testes.
+nativos como camera, GPS do aparelho ou notificacoes. **Analisar texto** executa
+a extracao no navegador. **Testar envio HTTP** envia o texto ao servidor Python
+local e mostra a resposta da API.
+
+## Receber texto de um GPS/app por HTTP
+
+Com o servidor rodando, outro programa pode enviar um POST para
+`http://127.0.0.1:8000/api/ingest` com JSON:
+
+```json
+{
+  "device_id": "gps-demo-01",
+  "text": "Ocorrencia em 18/10/2026 09:55 nas coordenadas -25.428470, -49.273460 placa ABC1D23"
+}
+```
+
+O campo `text` e obrigatorio. `device_id` e opcional. A resposta contem `ok`,
+uma mensagem e os campos que o extrator reconheceu:
+
+```json
+{
+  "ok": true,
+  "message": "Texto recebido e processado.",
+  "fields": {
+    "data": "18/10/2026",
+    "hora": "09:55",
+    "latitude": "-25.428470",
+    "longitude": "-49.273460",
+    "placa": "ABC1D23"
+  },
+  "device_id": "gps-demo-01"
+}
+```
+
+Teste pelo PowerShell enquanto o servidor estiver rodando:
+
+```powershell
+$body = @{
+  device_id = "gps-demo-01"
+  text = "Ocorrencia em 18/10/2026 09:55 nas coordenadas -25.428470, -49.273460 placa ABC1D23"
+} | ConvertTo-Json
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/ingest" -Method Post -ContentType "application/json" -Body $body
+```
+
+O botao **Testar envio HTTP** na interface faz a mesma chamada e exibe os
+campos retornados. O botao **Analisar texto** continua funcionando sem API.
+Este prototipo nao grava os relatos. O servidor aceita conexoes somente do
+proprio computador; nao o exponha a internet ou a outros dispositivos sem
+definir autenticacao, protecao de dados e hospedagem adequada. O GitHub Pages
+publica somente a interface estatica e nao oferece essa API; para um GPS real
+enviar dados pela internet, ainda sera necessario hospedar um backend.
 
 ## Publicar no GitHub Pages
 
