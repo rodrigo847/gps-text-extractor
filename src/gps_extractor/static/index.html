@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f7f5">
+    <title>GPS | Extrator de texto</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="GPS, inicio">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M19 10.2c0 5-7 10.3-7 10.3S5 15.2 5 10.2a7 7 0 1 1 14 0Z" />
+              <circle cx="12" cy="10" r="2.3" />
+            </svg>
+          </span>
+          <span>campo<span class="brand-light">/gps</span></span>
+        </a>
+        <span class="prototype-tag"><span></span> protótipo local</span>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">EXTRAÇÃO INTELIGENTE</p>
+        <h1 id="page-title">Do texto para<br><span>o que importa.</span></h1>
+        <p class="intro-copy">
+          Cole um relato e encontre data, localização e placa em segundos.
+        </p>
+      </section>
+
+      <section class="workspace" aria-label="Extrator de informações">
+        <form id="extract-form" class="input-card">
+          <div class="card-heading">
+            <label for="source-text">Texto do relato</label>
+            <span class="input-hint">PRONTO PARA ANALISAR</span>
+          </div>
+          <textarea id="source-text" name="text" rows="5" maxlength="100000"
+            placeholder="Cole ou digite aqui o texto que deseja analisar..." required>Ocorrência em 18/10/2026 09:55 nas coordenadas -25.428470, -49.273460 placa ABC1D23</textarea>
+          <div class="input-footer">
+            <span id="char-count">0 caracteres</span>
+            <button class="primary-button" type="submit">
+              Analisar texto
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 10h11M10 5l5 5-5 5" />
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        <section id="results" class="results-card" aria-live="polite" hidden>
+          <div class="results-heading">
+            <div>
+              <p class="eyebrow">RESULTADO DA LEITURA</p>
+              <h2>Informações encontradas</h2>
+            </div>
+            <span id="result-count" class="result-count"></span>
+          </div>
+          <div id="result-list" class="result-list"></div>
+        </section>
+
+        <p id="status-message" class="status-message" role="status">
+          Seus dados são processados localmente neste protótipo.
+        </p>
+      </section>
+
+      <footer>Uma primeira ideia, aberta a novas direções.</footer>
+    </main>
+  </body>
+</html>

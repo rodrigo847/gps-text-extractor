@@ -1,0 +1,83 @@
+# GPS Text Extractor
+
+Projeto em fase de descoberta. O primeiro prototipo tenta extrair data/hora,
+coordenadas e placas brasileiras de um texto livre. Isso e apenas uma hipotese
+inicial baseada no trecho de codigo recebido; o objetivo real do projeto ainda
+precisa ser confirmado com seu autor.
+
+## Requisitos
+
+- Python 3.10 ou superior
+- Nenhuma dependencia externa para executar o prototipo
+
+## Comecar
+
+Na raiz do projeto, instale o pacote em modo editavel e execute os testes:
+
+```powershell
+python -m pip install -e .
+python -m unittest discover -s tests -v
+```
+
+## Testar a interface web localmente
+
+Inicie o servidor local para testar a interface:
+
+```powershell
+python -m gps_extractor
+```
+
+Abra `http://127.0.0.1:8000` no navegador do computador. Para simular uma tela
+de celular, no Chrome ou Edge abra as ferramentas do desenvolvedor (`F12`) e
+ative o modo de dispositivo (`Ctrl+Shift+M`). O texto de exemplo ja vem
+preenchido. Para encerrar o servidor, volte ao terminal e pressione `Ctrl+C`.
+
+Esse modo testa a interface em tamanhos de celular, mas nao simula recursos
+nativos como camera, GPS do aparelho ou notificacoes. A interface web executa
+a extracao localmente no navegador; o servidor Python local tambem disponibiliza
+uma API simples para testes.
+
+## Publicar no GitHub Pages
+
+O site e estatico e pode ser hospedado gratuitamente pelo GitHub Pages. Crie um
+repositorio e envie o projeto para a branch `main`. O workflow em
+`.github/workflows/pages.yml` publica automaticamente o conteudo de
+`src/gps_extractor/static` quando habilitado em **Settings > Pages > Build and
+deployment > Source: GitHub Actions**. Depois do primeiro deploy, o GitHub mostra
+a URL publica nessa mesma pagina. A URL costuma ser
+`https://<usuario>.github.io/<repositorio>/`.
+
+O GitHub Pages hospeda apenas a interface estatica; nao executa o servidor Python.
+Por isso, a extracao na pagina e feita no proprio navegador.
+
+Para experimentar a funcao com um texto:
+
+```powershell
+python -c "from gps_extractor import extract_fields; print(extract_fields('Ocorrencia em 18/10/2026 09:55 nas coordenadas -25.428470, -49.273460 placa ABC1D23'))"
+```
+
+A funcao retorna somente os campos encontrados. Datas e horas sao validadas;
+coordenadas precisam estar dentro dos limites geograficos; placas sao
+normalizadas para maiusculas.
+
+## Estrutura
+
+```text
+src/gps_extractor/  codigo da biblioteca
+src/gps_extractor/static/ interface web do prototipo
+tests/              testes automatizados
+```
+
+## Proximos passos para definir a direcao
+
+Antes de crescer o escopo, converse com o autor e descubra:
+
+1. Quem vai usar o projeto e qual problema concreto ele resolve?
+2. De onde vem o texto: digitacao, OCR de imagens, documentos ou outra fonte?
+3. Quais campos e formatos sao obrigatorios? Pode haver mais de uma ocorrencia?
+4. O resultado deve ser uma biblioteca, ferramenta de linha de comando, API ou interface?
+5. Ha requisitos de privacidade, armazenamento, auditoria ou integracao com mapas?
+
+As respostas devem orientar o proximo incremento. Evite assumir que placas ou
+dados de ocorrencias fazem parte do produto ate confirmar o contexto e o uso
+pretendido.
