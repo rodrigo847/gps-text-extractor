@@ -5,6 +5,9 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
   const canvas = document.querySelector("#photo-preview");
   const startButton = document.querySelector("#start-camera");
   const captureButton = document.querySelector("#capture-photo");
+  const cameraView = document.querySelector("#camera-view");
+  const cameraFeed = document.querySelector(".camera-feed");
+  const captureLabel = document.querySelector("#capture-label");
   const stopButton = document.querySelector("#stop-camera");
   const clearButton = document.querySelector("#clear-photo");
   const status = document.querySelector("#capture-status");
@@ -77,9 +80,14 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
       document.querySelector("#camera-view").hidden = false;
       await video.play();
       if (!isCurrent(operation)) return;
+      cameraFeed.style.setProperty("--camera-ratio", video.videoWidth / video.videoHeight);
       startButton.hidden = true;
       captureButton.hidden = false;
       stopButton.hidden = false;
+      cameraView.scrollIntoView({
+        block: "center",
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+      });
       notify("Enquadre somente a placa na faixa destacada e capture. A localização será solicitada nesse momento.");
     } catch (error) {
       if (!isCurrent(operation)) return;
@@ -108,6 +116,8 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     busy = true;
     const operation = ++operationId;
     captureButton.disabled = true;
+    captureLabel.textContent = "Obtendo GPS…";
+    cameraView.setAttribute("aria-busy", "true");
     stopButton.disabled = true;
     clearPhoto();
     let worker = null;
@@ -189,6 +199,8 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
       if (operation === operationId) {
         busy = false;
         captureButton.disabled = false;
+        captureLabel.textContent = "Tirar foto";
+        cameraView.removeAttribute("aria-busy");
         stopButton.disabled = false;
         startButton.disabled = false;
         clearButton.disabled = false;
@@ -224,6 +236,8 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     stopCamera();
     clearPhoto();
     busy = false;
+    captureLabel.textContent = "Tirar foto";
+    cameraView.removeAttribute("aria-busy");
     for (const button of [startButton, captureButton, stopButton, clearButton]) {
       button.disabled = false;
     }

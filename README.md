@@ -107,7 +107,9 @@ Na nova secao **Ler placa pela camera**, siga este fluxo:
 3. Use uma placa ficticia ou captura autorizada. Enquadre a placa na faixa
    apenas se ja estiver legivel sem se aproximar. Nunca siga veiculos,
    confronte pessoas ou utilize a camera enquanto dirige.
-4. Clique em **Capturar foto com GPS e ler placa** e permita a localizacao.
+4. A tela acompanha a abertura da camera. Toque em **Tirar foto**, no painel
+   junto da previa, e permita a localizacao. O botao fica desativado e mostra
+   **Obtendo GPS...** durante a espera para evitar capturas duplicadas.
    O app solicita uma posicao nova e so captura a imagem depois de recebe-la.
    Posicoes com mais de 15 segundos de diferenca da captura sao recusadas.
 5. O recorte da placa e processado por Tesseract.js 6.0.1 no navegador.

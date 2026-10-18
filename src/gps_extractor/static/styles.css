@@ -356,8 +356,72 @@ h2 {
 }
 
 #camera-view {
-  position: relative;
   margin-top: 16px;
+  padding-bottom: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #17251f;
+  scroll-margin: 16px;
+}
+
+.camera-feed {
+  position: relative;
+  width: min(100%, calc(55svh * var(--camera-ratio, 1.333)));
+  margin: 0 auto;
+}
+
+.camera-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 12px 4px;
+}
+
+.camera-shutter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 56px;
+  min-width: 150px;
+  padding: 8px 18px;
+  border: 2px solid white;
+  border-radius: 32px;
+  background: white;
+  color: #17251f;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.shutter-icon {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #176c4c;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px white;
+  background: #176c4c;
+}
+
+.camera-shutter:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.camera-shutter:focus-visible {
+  outline: 3px solid #82d6a7;
+  outline-offset: 3px;
+}
+
+#camera-capture-hint {
+  margin: 10px 12px 0;
+  color: #e4eee7;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 #camera-preview,
