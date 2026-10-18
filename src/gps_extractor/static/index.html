@@ -25,45 +25,16 @@
       </header>
 
       <section class="intro" aria-labelledby="page-title">
-        <p class="eyebrow">COLABORAÇÃO RESPONSÁVEL</p>
-        <h1 id="page-title">Um registro pode ajudar.<br><span>Sua segurança vem primeiro.</span></h1>
-        <p class="intro-copy">
-          Organize um possível avistamento com texto, foto e localização.
-          Uma proposta para apoiar, no futuro, a triagem por autoridades.
-        </p>
+        <h1 id="page-title">Fotografe. Revise.<br><span>Veja no mapa.</span></h1>
+        <p class="intro-copy">Sua segurança vem primeiro. Não siga veículos nem confronte pessoas.</p>
       </section>
 
       <section class="workspace" aria-label="Extrator de informações">
-        <aside class="results-card safety-card" aria-labelledby="safety-heading">
-          <h2 id="safety-heading">Observe com segurança. Não intervenha.</h2>
-          <p class="map-copy">
-            Não se aproxime para fotografar, não siga veículos e não confronte ninguém.
-            Não publique placas ou localizações como acusações. Se houver risco imediato
-            no Brasil, procure um local seguro e ligue 190.
-          </p>
-          <p class="map-copy">
-            <strong>Protótipo independente, sem vínculo oficial.</strong>
-            Não envia denúncias às autoridades, não consulta registros de roubo ou furto
-            e não identifica proprietários. Uma placa ou um ponto no mapa não comprovam
-            crime. Para comunicar uma ocorrência, utilize os canais oficiais.
-          </p>
-        </aside>
         <section class="results-card capture-card" aria-labelledby="capture-heading">
-          <p class="eyebrow">FOTO + LOCALIZAÇÃO DO APARELHO</p>
-          <h2 id="capture-heading">Ler placa pela câmera</h2>
-          <p class="map-copy">
-            Teste com uma placa fictícia ou uma captura autorizada, em local seguro.
-            Use o enquadramento apenas se a placa já estiver legível sem se aproximar.
-            O OCR pode errar: revise sempre os caracteres antes de confirmar.
-            Não use a câmera enquanto dirige.
-          </p>
-          <p class="map-copy">
-            Câmera e GPS dependem da sua permissão. A imagem e o texto OCR ficam neste
-            navegador, sem envio ao backend. O motor OCR é baixado de provedores externos,
-            que recebem seu IP, mas não a foto. Não há consulta a cadastros de veículos.
-          </p>
+          <h2 id="capture-heading">Ler uma placa</h2>
+          <p class="map-copy">Foto e GPS com sua permissão. Revise a leitura antes de confirmar.</p>
           <div class="button-group">
-            <button id="start-camera" class="secondary-button" type="button">Abrir câmera</button>
+            <button id="start-camera" class="primary-button" type="button">Abrir câmera</button>
           </div>
           <div id="camera-view" hidden>
             <div class="camera-feed">
@@ -78,9 +49,21 @@
               </button>
               <button id="stop-camera" class="secondary-button" type="button" hidden>Desligar câmera</button>
             </div>
-            <p id="camera-capture-hint">Toque em Tirar foto e mantenha o enquadramento enquanto o GPS é obtido.</p>
+            <p id="camera-capture-hint">Mantenha a placa enquadrada durante a captura.</p>
           </div>
-          <p id="capture-status" class="map-copy" role="status">Use HTTPS ou localhost. Enquadre apenas a placa na faixa da câmera.</p>
+          <p id="capture-status" class="map-copy" role="status"></p>
+          <details class="app-details">
+            <summary>Privacidade e uso seguro</summary>
+            <p class="map-copy">
+              Foto e OCR ficam neste navegador, sem upload. O motor OCR é baixado de
+              provedores externos, que recebem seu IP, não a foto. A leitura pode errar.
+            </p>
+            <p class="map-copy">
+              Teste com uma placa fictícia ou captura autorizada. Não se aproxime para
+              fotografar, não dirija usando a câmera e não publique acusações.
+              Requer HTTPS ou localhost.
+            </p>
+          </details>
           <section id="photo-review" hidden aria-label="Revisão da captura">
             <canvas id="photo-preview" role="img" aria-label="Foto recortada da placa para revisão"></canvas>
             <p id="photo-location" class="map-copy"></p>
@@ -94,8 +77,7 @@
                 autocapitalize="characters" spellcheck="false" placeholder="ABC1D23" required>
               <label class="capture-consent">
                 <input id="confirm-location" type="checkbox" required>
-                Entendo que o ponto é a posição do aparelho nesta captura, não a localização
-                comprovada do veículo. Conferi a placa e a precisão informada.
+                Revisei a placa e a precisão. O ponto é do aparelho, não comprova a posição do veículo.
               </label>
               <button class="primary-button" type="submit" disabled>Confirmar dados para o mapa</button>
             </form>
@@ -103,19 +85,17 @@
           </section>
         </section>
 
-        <form id="extract-form" class="input-card">
+        <details class="app-details text-option">
+          <summary>Prefere colar um texto ou coordenadas?</summary>
+          <form id="extract-form" class="input-card">
           <div class="card-heading">
             <label for="source-text">Texto do relato</label>
-            <span class="input-hint">PRONTO PARA ANALISAR</span>
           </div>
           <textarea id="source-text" name="text" rows="5" maxlength="100000"
             placeholder="Cole ou digite aqui o texto que deseja analisar..." required>Ocorrência em 18/10/2026 09:55 nas coordenadas -25.428470, -49.273460 placa ABC1D23</textarea>
           <div class="input-footer">
             <span id="char-count">0 caracteres</span>
             <div class="button-group">
-              <button class="secondary-button" id="send-api" type="button">
-                Testar envio HTTP
-              </button>
               <button class="primary-button" type="submit">
                 Analisar texto
                 <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -124,7 +104,13 @@
               </button>
             </div>
           </div>
+          <details class="app-details">
+            <summary>Teste técnico da API local</summary>
+            <p class="map-copy">Requer o servidor Python local. Não funciona no GitHub Pages.</p>
+            <button class="secondary-button" id="send-api" type="button">Testar envio HTTP</button>
+          </details>
         </form>
+        </details>
 
         <section id="results" class="results-card" aria-live="polite" hidden>
           <div class="results-heading">
@@ -138,17 +124,13 @@
         </section>
 
         <section id="map-section" class="results-card" aria-labelledby="map-heading" hidden>
-          <p class="eyebrow">LOCALIZAÇÃO DO RELATO</p>
           <h2 id="map-heading">Ponto no mapa</h2>
           <p id="map-caption" class="map-copy"></p>
           <p class="map-copy">
-            O ponto usa as coordenadas do texto ou do aparelho na captura, conforme a origem
-            indicada acima. A placa é uma identificação revisável: não há confirmação de
-            avistamento nem rastreamento.
+            Posição informada, sem confirmação de avistamento ou rastreamento.
           </p>
           <p class="map-copy">
-            Ao carregar, o OpenStreetMap receberá seu IP e a região consultada,
-            mas não a placa ou o texto. Requer internet.
+            Ao abrir, o OpenStreetMap recebe seu IP e a região, não a placa ou foto.
           </p>
           <button id="load-map" type="button" class="secondary-button">Carregar mapa online</button>
           <iframe id="location-map" title="Mapa das coordenadas do relato"
@@ -161,11 +143,19 @@
         </section>
 
         <p id="status-message" class="status-message" role="status">
-          A análise no navegador não envia os dados para um servidor.
+          Protótipo independente. Não envia denúncias às autoridades.
         </p>
+        <details class="app-details">
+          <summary>Sobre o Sinaliza</summary>
+          <p class="map-copy">
+            Sem vínculo oficial, consulta de roubo/furto ou identificação de proprietários.
+            Placa e coordenadas não comprovam crime. Para comunicar uma ocorrência,
+            use os canais oficiais. Em risco imediato no Brasil, vá para um local seguro e ligue 190.
+          </p>
+        </details>
       </section>
 
-      <footer>Sinaliza · Tecnologia para colaborar com responsabilidade. Protótipo sem vínculo oficial.</footer>
+      <footer>Sinaliza · Colaboração responsável.</footer>
     </main>
   </body>
 </html>

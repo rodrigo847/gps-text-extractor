@@ -97,7 +97,7 @@ textarea {
 }
 
 .intro {
-  padding: 64px 0 36px;
+  padding: 24px 0;
   text-align: center;
 }
 
@@ -350,9 +350,25 @@ h2 {
   margin-bottom: 18px;
 }
 
-.safety-card {
-  margin-bottom: 18px;
-  border-left: 4px solid var(--green);
+.app-details {
+  margin-top: 14px;
+  font-size: 12px;
+}
+
+.app-details summary {
+  min-height: 44px;
+  padding: 12px 0;
+  color: var(--green);
+  cursor: pointer;
+  line-height: 1.6;
+}
+
+.text-option .input-card {
+  margin-top: 8px;
+}
+
+#capture-status:empty {
+  display: none;
 }
 
 #camera-view {
@@ -515,7 +531,7 @@ footer {
   }
 
   .intro {
-    padding: 48px 0 26px;
+    padding: 16px 0 20px;
   }
 
   h1 {
