@@ -1,4 +1,4 @@
-import { extractFields } from "./parser.mjs";
+import { createMapLocation, extractFields } from "./parser.mjs";
 
 const form = document.querySelector("#extract-form");
 const textInput = document.querySelector("#source-text");
@@ -9,6 +9,48 @@ const resultCount = document.querySelector("#result-count");
 const statusMessage = document.querySelector("#status-message");
 const analyzeButton = form.querySelector("button[type='submit']");
 const sendApiButton = document.querySelector("#send-api");
+const mapSection = document.querySelector("#map-section");
+const mapCaption = document.querySelector("#map-caption");
+const loadMapButton = document.querySelector("#load-map");
+const mapFrame = document.querySelector("#location-map");
+const mapHelp = document.querySelector("#map-help");
+const externalMap = document.querySelector("#external-map");
+let mapLocation = null;
+
+function resetMap() {
+  mapLocation = null;
+  mapFrame.removeAttribute("src");
+  mapFrame.hidden = true;
+  mapSection.hidden = true;
+  mapHelp.hidden = true;
+  externalMap.removeAttribute("href");
+  loadMapButton.hidden = false;
+}
+
+function prepareMap(fields) {
+  resetMap();
+  mapLocation = createMapLocation(fields);
+  if (!mapLocation) {
+    return;
+  }
+  mapCaption.textContent = [
+    fields.placa ? `Placa informada: ${fields.placa}` : "Placa não informada",
+    `Coordenadas: ${fields.latitude}, ${fields.longitude}`,
+    [fields.data, fields.hora].filter(Boolean).join(" "),
+  ].filter(Boolean).join(" · ");
+  mapSection.hidden = false;
+}
+
+loadMapButton.addEventListener("click", () => {
+  if (!mapLocation) {
+    return;
+  }
+  mapFrame.src = mapLocation.embedUrl;
+  externalMap.href = mapLocation.externalUrl;
+  mapFrame.hidden = false;
+  mapHelp.hidden = false;
+  loadMapButton.hidden = true;
+});
 
 const labels = {
   data: "Data",
@@ -24,6 +66,7 @@ function updateCharacterCount() {
 }
 
 function renderFields(fields, message) {
+  prepareMap(fields);
   resultList.replaceChildren();
   const entries = Object.entries(fields);
 
@@ -57,13 +100,20 @@ function renderFields(fields, message) {
   statusMessage.classList.remove("error");
 }
 
-textInput.addEventListener("input", updateCharacterCount);
+textInput.addEventListener("input", () => {
+  updateCharacterCount();
+  resetMap();
+  results.hidden = true;
+  statusMessage.textContent = "Texto alterado. Analise novamente para atualizar os resultados.";
+  statusMessage.classList.remove("error");
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   try {
     renderFields(extractFields(textInput.value));
   } catch (error) {
+    resetMap();
     statusMessage.textContent =
       error instanceof Error ? error.message : "Falha ao analisar o texto.";
     statusMessage.classList.add("error");
@@ -74,6 +124,9 @@ form.addEventListener("submit", async (event) => {
 sendApiButton.addEventListener("click", async () => {
   sendApiButton.disabled = true;
   analyzeButton.disabled = true;
+  textInput.disabled = true;
+  resetMap();
+  results.hidden = true;
   statusMessage.textContent = "Enviando texto ao backend local...";
   statusMessage.classList.remove("error");
 
@@ -89,6 +142,7 @@ sendApiButton.addEventListener("click", async () => {
     const payload = await response.json();
     renderFields(payload.fields, payload.message ?? "Resposta recebida do backend.");
   } catch (error) {
+    resetMap();
     statusMessage.textContent =
       error instanceof Error
         ? `${error.message} Inicie o servidor Python local para testar a API.`
@@ -98,6 +152,7 @@ sendApiButton.addEventListener("click", async () => {
   } finally {
     sendApiButton.disabled = false;
     analyzeButton.disabled = false;
+    textInput.disabled = false;
   }
 });
 

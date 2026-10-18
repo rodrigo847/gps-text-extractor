@@ -46,7 +46,7 @@
   <path d="M 870 333 H 950" class="connector"/>
   <rect x="952" y="283" width="360" height="100" rx="12" fill="#edf6ef" stroke="#bcd8c5"/>
   <text x="1132" y="319" text-anchor="middle" class="node-title">App mostra os campos</text>
-  <text x="1132" y="348" text-anchor="middle" class="node-copy">Ou informa que nada foi reconhecido</text>
+  <text x="1132" y="348" text-anchor="middle" class="node-copy">Mapa opcional se houver coordenadas</text>
   <text x="88" y="410" class="label">Hospedagem: GitHub Pages · O site não depende de o computador do desenvolvedor estar ligado.</text>
 
   <rect x="60" y="456" width="1280" height="444" rx="20" fill="#fff" stroke="#dce7df"/>
@@ -73,7 +73,7 @@
 
   <rect x="1069" y="556" width="243" height="105" rx="12" fill="#edf6ef" stroke="#bcd8c5"/>
   <text x="1190" y="594" text-anchor="middle" class="node-title">Resposta ao remetente</text>
-  <text x="1190" y="624" text-anchor="middle" class="node-copy">App local exibe os campos</text>
+  <text x="1190" y="624" text-anchor="middle" class="node-copy">App exibe campos e opção de mapa</text>
 
   <path d="M 550 661 V 706" class="connector"/>
   <text x="571" y="691" class="label">Envio inválido</text>
@@ -105,7 +105,7 @@
   <rect x="952" y="1024" width="360" height="85" rx="12" fill="#fff" stroke="#e6d4a9"/>
   <text x="1132" y="1060" text-anchor="middle" class="node-title">App recebe atualizações</text>
   <text x="1132" y="1086" text-anchor="middle" class="node-copy">Mecanismo de atualização a definir</text>
-  <text x="88" y="1149" class="label">Mapa, alertas, histórico e rastreamento contínuo são possibilidades, não funcionalidades já implementadas.</text>
+  <text x="88" y="1149" class="label">Mapa de um ponto disponível após clique; alertas, histórico e rastreamento contínuo ainda não foram implementados.</text>
 
   <text x="60" y="1218" class="eyebrow">DECISÕES PARA A PRÓXIMA CONVERSA</text>
   <text x="60" y="1250" class="body">Qual GPS envia os dados? · Como é a mensagem real? · Quem acessa? · O que deve aparecer e ser salvo?</text>

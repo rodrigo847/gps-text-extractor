@@ -338,6 +338,30 @@ h2 {
   text-align: center;
 }
 
+.map-copy {
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.map-copy a {
+  color: var(--green);
+}
+
+#location-map {
+  width: 100%;
+  height: 340px;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
 .status-message.error {
   color: #b34343;
 }

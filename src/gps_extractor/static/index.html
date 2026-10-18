@@ -66,6 +66,28 @@
           <div id="result-list" class="result-list"></div>
         </section>
 
+        <section id="map-section" class="results-card" aria-labelledby="map-heading" hidden>
+          <p class="eyebrow">LOCALIZAÇÃO DO RELATO</p>
+          <h2 id="map-heading">Ponto no mapa</h2>
+          <p id="map-caption" class="map-copy"></p>
+          <p class="map-copy">
+            O ponto usa as coordenadas deste texto. A placa é apenas uma identificação
+            informada no relato: não há confirmação de avistamento nem rastreamento.
+          </p>
+          <p class="map-copy">
+            Ao carregar, o OpenStreetMap receberá seu IP e a região consultada,
+            mas não a placa ou o texto. Requer internet.
+          </p>
+          <button id="load-map" type="button" class="secondary-button">Carregar mapa online</button>
+          <iframe id="location-map" title="Mapa das coordenadas do relato"
+            referrerpolicy="no-referrer" hidden></iframe>
+          <p id="map-help" class="map-copy" hidden>
+            Se o mapa não aparecer, verifique a conexão ou
+            <a id="external-map" target="_blank" rel="noopener noreferrer">abra no OpenStreetMap</a>.
+          </p>
+          <p class="map-copy">Mapa: © colaboradores do OpenStreetMap.</p>
+        </section>
+
         <p id="status-message" class="status-message" role="status">
           A análise no navegador não envia os dados para um servidor.
         </p>

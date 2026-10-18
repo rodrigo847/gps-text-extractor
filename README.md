@@ -50,6 +50,32 @@ nativos como camera, GPS do aparelho ou notificacoes. **Analisar texto** executa
 a extracao no navegador. **Testar envio HTTP** envia o texto ao servidor Python
 local e mostra a resposta da API.
 
+## Visualizar um ponto no mapa
+
+Depois de analisar um texto com coordenadas validas, a interface oferece
+**Carregar mapa online**. O mapa OpenStreetMap mostra um marcador no primeiro
+par de coordenadas reconhecido. A placa, data e hora extraidas aparecem como
+identificacao ao lado do mapa, quando presentes. Tambem funciona com coordenadas
+sem placa, tanto na analise do navegador quanto na resposta HTTP local.
+
+O mapa so e consultado apos clicar no botao. O provedor recebe o IP e as
+coordenadas/regiao consultada, mas nao recebe a placa nem o texto do relato.
+Nao ha geolocalizacao do aparelho, armazenamento de historico ou rastreamento.
+Ao editar o texto, o mapa anterior e removido ate uma nova analise.
+
+**Importante:** encontrar placa e coordenadas no mesmo texto nao comprova que
+o veiculo esteve naquele ponto. Este prototipo usa a primeira ocorrencia de
+cada campo independentemente e e destinado a um relato de uma ocorrencia por
+vez. Textos com varias placas ou locais podem produzir uma associacao incorreta.
+O mapa exige internet; se nao carregar, existe um link para abrir o mesmo ponto
+diretamente no OpenStreetMap.
+
+Para validar a parte do navegador (Node.js instalado), execute:
+
+```powershell
+node --test tests/test_static_parser.mjs
+```
+
 ## Receber texto de um GPS/app por HTTP
 
 Com o servidor rodando, outro programa pode enviar um POST para
