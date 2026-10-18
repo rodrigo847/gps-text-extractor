@@ -12,7 +12,8 @@ https://rodrigo847.github.io/gps-text-extractor/
 
 ## Fluxograma para apresentacao
 
-[Abrir o fluxograma do projeto](docs/fluxograma-projeto.svg).
+[Abrir o fluxograma online](https://rodrigo847.github.io/gps-text-extractor/fluxograma.svg).
+O [arquivo original](docs/fluxograma-projeto.svg) tambem esta no repositorio.
 O diagrama separa a demonstracao online, a integracao HTTP local e a futura
 integracao com um GPS real pela internet. Pode ser aberto no navegador ou
 inserido em uma apresentacao como imagem vetorial.

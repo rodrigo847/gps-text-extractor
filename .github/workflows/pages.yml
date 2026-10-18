@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Include presentation flowchart
+        run: cp docs/fluxograma-projeto.svg src/gps_extractor/static/fluxograma.svg
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
