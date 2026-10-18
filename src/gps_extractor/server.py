@@ -20,7 +20,7 @@ _MAX_BODY_SIZE = 1_048_576
 
 class _AppHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
-        asset = _ASSETS.get(self.path)
+        asset = _ASSETS.get(self.path.partition("?")[0])
         if asset is None:
             self.send_error(404)
             return

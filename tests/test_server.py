@@ -35,6 +35,12 @@ class ServerTests(unittest.TestCase):
                     self.assertIn("javascript", response.headers["Content-Type"])
                     self.assertGreater(len(response.read()), 0)
 
+    def test_versioned_stylesheet_is_served(self):
+        with urlopen(f"{self.base_url}/styles.css?v=20261018-camera-compact") as response:
+            self.assertEqual(response.status, 200)
+            self.assertIn("text/css", response.headers["Content-Type"])
+            self.assertIn(b".camera-launch", response.read())
+
     def test_camera_image_is_served_as_png(self):
         with urlopen(f"{self.base_url}/camera.png") as response:
             self.assertEqual(response.status, 200)

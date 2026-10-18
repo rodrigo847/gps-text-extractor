@@ -353,6 +353,8 @@ h2 {
 .camera-launch {
   display: flex;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   flex-direction: column;
   align-items: center;
   gap: 8px;
@@ -381,6 +383,8 @@ h2 {
 
 .camera-launch-art img {
   display: block;
+  max-width: 100%;
+  object-fit: contain;
   width: 96px;
   height: 96px;
 }
@@ -622,6 +626,31 @@ footer {
 }
 
 @media (max-width: 560px) {
+  .camera-launch {
+    gap: 6px;
+    padding: 14px 10px;
+  }
+
+  .camera-launch-art {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+  }
+
+  .camera-launch-art img {
+    width: 72px;
+    height: 72px;
+  }
+
+  .camera-launch-title {
+    font-size: 16px;
+  }
+
+  .camera-launch-hint {
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+
   .app-shell {
     width: min(100% - 28px, 450px);
   }

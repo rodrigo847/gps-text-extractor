@@ -108,7 +108,9 @@ node --test tests/test_static_parser.mjs
 Na interface simplificada, a camera e a acao principal. O cartao **Abrir camera**
 usa a imagem de camera fornecida para o projeto; toda a area e um botao,
 acionavel por toque, clique, Enter ou espaco. A imagem e servida localmente,
-sem depender de um link externo. Um unico menu
+sem depender de um link externo. No celular, a imagem aparece com 72 x 72 pixels,
+e a folha de estilos usa uma versao na URL para atualizar o visual em cache.
+Um unico menu
 **Mais opções**, fechado inicialmente, guarda **Privacidade e uso seguro**,
 **Sobre o Sinaliza** e **Colar texto ou coordenadas**. Esses itens tambem
 comecam fechados. O envio HTTP fica em
