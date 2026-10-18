@@ -38,6 +38,12 @@ integracao com um GPS externo pela internet, alem do novo fluxo de camera com
 GPS e OCR no navegador. Pode ser aberto no navegador ou
 inserido em uma apresentacao como imagem vetorial.
 
+## Pesquisas para evolucao
+
+[Leitura de placas e uso autorizado de cameras](docs/pesquisa-leitura-placas-cameras.md):
+pesquisa de 18/10/2026 com fontes, limitacoes, base UFPR-ALPR e proximas etapas
+para avaliar deteccao especializada e futuras integracoes.
+
 ## Requisitos
 
 - Python 3.10 ou superior
