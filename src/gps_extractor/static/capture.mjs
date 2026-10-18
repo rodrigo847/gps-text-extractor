@@ -1,4 +1,4 @@
-import { extractPlateCandidates, validateCapturePosition, normalizePlate } from "./capture-data.mjs";
+import { extractPlateCandidates, validateCapturePosition, normalizePlate, waitForCapturePosition } from "./capture-data.mjs";
 
 export function initializeCapture({ onInvalidate, onConfirm }) {
   const video = document.querySelector("#camera-preview");
@@ -22,6 +22,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
   let busy = false;
   let active = true;
   let operationId = 0;
+  let locationRequest = null;
 
   function isCurrent(operation) {
     return active && operation === operationId;
@@ -123,10 +124,14 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     let worker = null;
     try {
       notify("Obtendo a posição atual do aparelho. Mantenha a placa enquadrada...");
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true, maximumAge: 0, timeout: 20000,
-        });
+      locationRequest = new AbortController();
+      const position = await waitForCapturePosition(navigator.geolocation, {
+        signal: locationRequest.signal,
+        onWaiting() {
+          if (isCurrent(operation)) {
+            notify("Atualizando o GPS… Mantenha a placa enquadrada. Isso pode levar até 25 segundos.");
+          }
+        },
       });
       if (!isCurrent(operation)) return;
       const capturedAt = Date.now();
@@ -197,6 +202,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
         }
       }
       if (operation === operationId) {
+        locationRequest = null;
         busy = false;
         captureButton.disabled = false;
         captureLabel.textContent = "Tirar foto";
@@ -233,6 +239,8 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
   window.addEventListener("pagehide", () => {
     active = false;
     operationId += 1;
+    locationRequest?.abort();
+    locationRequest = null;
     stopCamera();
     clearPhoto();
     busy = false;

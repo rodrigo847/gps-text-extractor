@@ -117,7 +117,10 @@ Na nova secao **Ler placa pela camera**, siga este fluxo:
    junto da previa, e permita a localizacao. O botao fica desativado e mostra
    **Obtendo GPS...** durante a espera para evitar capturas duplicadas.
    O app solicita uma posicao nova e so captura a imagem depois de recebe-la.
-   Posicoes com mais de 15 segundos de diferenca da captura sao recusadas.
+   Se o aparelho retornar uma posicao antiga, o app aguarda atualizacoes do GPS
+   por ate 25 segundos, sem usar o ponto antigo. A observacao e encerrada ao
+   obter uma posicao recente, negar permissao, sair da pagina ou atingir o prazo.
+   Posicoes com mais de 15 segundos de diferenca da captura continuam recusadas.
 5. O recorte da placa e processado por Tesseract.js 6.0.1 no navegador.
    A camera e desligada apos capturar. Revise a foto e o texto reconhecido.
 6. Confira ou corrija a placa, confira as coordenadas e a precisao estimada,
