@@ -113,6 +113,10 @@ Na nova secao **Ler placa pela camera**, siga este fluxo:
 3. Use uma placa ficticia ou captura autorizada. Enquadre a placa na faixa
    apenas se ja estiver legivel sem se aproximar. Nunca siga veiculos,
    confronte pessoas ou utilize a camera enquanto dirige.
+   A previa e uma janela compacta horizontal, sem abrir em tela cheia.
+   Se a camera disponibilizar zoom ao navegador, um controle aparece no painel;
+   caso contrario, o app informa que ele nao esta disponivel. O zoom pode ser
+   digital e nao garante novos detalhes nem leitura a distancia.
 4. A tela acompanha a abertura da camera. Toque em **Tirar foto**, no painel
    junto da previa, e permita a localizacao. O botao fica desativado e mostra
    **Obtendo GPS...** durante a espera para evitar capturas duplicadas.
@@ -122,6 +126,11 @@ Na nova secao **Ler placa pela camera**, siga este fluxo:
    obter uma posicao recente, negar permissao, sair da pagina ou atingir o prazo.
    Posicoes com mais de 15 segundos de diferenca da captura continuam recusadas.
 5. O recorte da placa e processado por Tesseract.js 6.0.1 no navegador.
+   O app solicita video de ate 3840 x 2160 como preferencia, nao como garantia:
+   a resolucao efetiva depende do aparelho/navegador. O recorte acompanha a faixa
+   visivel, inclusive com camera em retrato, e preserva ate 2400 pixels de largura.
+   Tesseract e OCR generico, nao um detector especializado de placas distantes;
+   imagens desfocadas, pequenas, inclinadas ou com reflexo podem nao ser lidas.
    A camera e desligada apos capturar. Revise a foto e o texto reconhecido.
 6. Confira ou corrija a placa, confira as coordenadas e a precisao estimada,
    marque a confirmacao e clique em **Confirmar dados para o mapa**.

@@ -3,6 +3,24 @@ export function normalizePlate(text) {
   return /^(?:[A-Z]{3}\d{4}|[A-Z]{3}\d[A-Z]\d{2})$/.test(plate) ? plate : null;
 }
 
+export function calculateCaptureCrop(sourceWidth, sourceHeight, previewWidth, previewHeight) {
+  if (![sourceWidth, sourceHeight, previewWidth, previewHeight]
+    .every((value) => Number.isFinite(value) && value > 0)) {
+    throw new Error("Dimensões da câmera indisponíveis. Abra a câmera novamente.");
+  }
+  const scale = Math.max(previewWidth / sourceWidth, previewHeight / sourceHeight);
+  const width = previewWidth * 0.9 / scale;
+  const height = Math.min(previewHeight / scale, width / 3.2);
+  return {
+    x: (sourceWidth - width) / 2,
+    y: (sourceHeight - height) / 2,
+    width,
+    height,
+    outputWidth: Math.max(1, Math.min(2400, Math.round(width))),
+    outputHeight: Math.max(1, Math.round(Math.min(2400, Math.round(width)) * height / width)),
+  };
+}
+
 export function extractPlateCandidates(text) {
   const matches = text.toUpperCase().match(/\b[A-Z]{3}[ -]?(?:\d{4}|\d[A-Z]\d{2})\b/g) ?? [];
   return [...new Set(matches.map(normalizePlate).filter(Boolean))];

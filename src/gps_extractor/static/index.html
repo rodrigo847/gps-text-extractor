@@ -41,6 +41,10 @@
               <video id="camera-preview" autoplay muted playsinline></video>
               <div class="camera-guide" aria-hidden="true"></div>
             </div>
+            <div id="camera-zoom" hidden>
+              <label for="zoom-level">Zoom <output id="zoom-value" for="zoom-level">1.0×</output></label>
+              <input id="zoom-level" type="range" min="1" max="1" step="0.1" value="1">
+            </div>
             <div class="camera-controls">
               <button id="capture-photo" class="camera-shutter" type="button"
                 aria-label="Capturar foto com GPS e ler placa" aria-describedby="camera-capture-hint" hidden>
@@ -50,6 +54,7 @@
               <button id="stop-camera" class="secondary-button" type="button" hidden>Desligar câmera</button>
             </div>
             <p id="camera-capture-hint">Mantenha a placa enquadrada durante a captura.</p>
+            <p id="zoom-help"></p>
           </div>
           <p id="capture-status" class="map-copy" role="status"></p>
           <details class="app-details">

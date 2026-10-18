@@ -382,8 +382,42 @@ h2 {
 
 .camera-feed {
   position: relative;
-  width: min(100%, calc(55svh * var(--camera-ratio, 1.333)));
+  width: min(100%, calc(38svh * 16 / 9));
   margin: 0 auto;
+}
+
+#camera-preview {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+}
+
+#camera-zoom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 0;
+  color: white;
+  font-size: 12px;
+}
+
+#camera-zoom label {
+  flex-shrink: 0;
+}
+
+#zoom-level {
+  min-width: 0;
+  width: 100%;
+  min-height: 44px;
+  accent-color: #82d6a7;
+}
+
+#zoom-help {
+  margin: 6px 12px 0;
+  color: #e4eee7;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .camera-controls {

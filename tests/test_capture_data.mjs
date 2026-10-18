@@ -5,6 +5,7 @@ import {
   normalizePlate,
   validateCapturePosition,
   waitForCapturePosition,
+  calculateCaptureCrop,
 } from "../src/gps_extractor/static/capture-data.mjs";
 
 test("normalizes reviewed plates without guessing ambiguous characters", () => {
@@ -13,6 +14,29 @@ test("normalizes reviewed plates without guessing ambiguous characters", () => {
   assert.equal(normalizePlate("ABCID23"), null);
   assert.equal(normalizePlate("<ABC1D23>"), null);
   assert.equal(normalizePlate("ABC1D23 outra"), null);
+});
+
+test("capture crop matches the visible guide for landscape and portrait cameras", () => {
+  for (const [sourceWidth, sourceHeight] of [[3840, 2160], [720, 1280], [1920, 1080]]) {
+    const previewWidth = 320;
+    const previewHeight = 180;
+    const crop = calculateCaptureCrop(sourceWidth, sourceHeight, previewWidth, previewHeight);
+    const scale = Math.max(previewWidth / sourceWidth, previewHeight / sourceHeight);
+    const offsetX = (sourceWidth * scale - previewWidth) / 2;
+    const offsetY = (sourceHeight * scale - previewHeight) / 2;
+    assert.ok(Math.abs(crop.x * scale - offsetX - previewWidth * 0.05) < 0.001);
+    assert.ok(Math.abs(crop.y * scale - offsetY -
+      (previewHeight - previewWidth * 0.9 / 3.2) / 2) < 0.001);
+    assert.ok(crop.x >= 0 && crop.y >= 0);
+    assert.ok(crop.x + crop.width <= sourceWidth);
+    assert.ok(crop.y + crop.height <= sourceHeight);
+    assert.ok(crop.outputWidth <= 2400);
+    assert.ok(crop.outputWidth <= Math.round(crop.width));
+  }
+});
+
+test("capture crop rejects unavailable preview dimensions", () => {
+  assert.throws(() => calculateCaptureCrop(1920, 1080, 0, 0), /Dimensões/);
 });
 
 test("waits for a fresh GPS update after a cached position and clears the watch", async () => {

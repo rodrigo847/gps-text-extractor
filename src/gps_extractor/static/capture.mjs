@@ -1,4 +1,4 @@
-import { extractPlateCandidates, validateCapturePosition, normalizePlate, waitForCapturePosition } from "./capture-data.mjs";
+import { calculateCaptureCrop, extractPlateCandidates, validateCapturePosition, normalizePlate, waitForCapturePosition } from "./capture-data.mjs";
 
 export function initializeCapture({ onInvalidate, onConfirm }) {
   const video = document.querySelector("#camera-preview");
@@ -17,6 +17,10 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
   const locationInfo = document.querySelector("#photo-location");
   const confirmForm = document.querySelector("#confirm-photo");
   const approved = document.querySelector("#confirm-location");
+  const zoomControl = document.querySelector("#camera-zoom");
+  const zoomInput = document.querySelector("#zoom-level");
+  const zoomValue = document.querySelector("#zoom-value");
+  const zoomHelp = document.querySelector("#zoom-help");
   let stream = null;
   let record = null;
   let busy = false;
@@ -41,7 +45,36 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     captureButton.hidden = true;
     stopButton.hidden = true;
     startButton.hidden = false;
+    zoomControl.hidden = true;
   }
+
+  zoomInput.addEventListener("change", async () => {
+    if (busy || !stream) return;
+    const track = stream.getVideoTracks()[0];
+    const operation = operationId;
+    busy = true;
+    zoomInput.disabled = true;
+    captureButton.disabled = true;
+    try {
+      await track.applyConstraints({ advanced: [{ zoom: Number(zoomInput.value) }] });
+      if (!isCurrent(operation) || stream?.getVideoTracks()[0] !== track) return;
+      const actualZoom = track.getSettings().zoom ?? Number(zoomInput.value);
+      zoomInput.value = String(actualZoom);
+      zoomValue.textContent = `${Number(actualZoom).toFixed(1)}×`;
+    } catch (error) {
+      if (isCurrent(operation)) {
+        zoomInput.value = String(track.getSettings().zoom ?? zoomInput.min);
+        zoomValue.textContent = `${Number(zoomInput.value).toFixed(1)}×`;
+        notify(`O aparelho não conseguiu ajustar o zoom: ${error.message}. Continue sem se aproximar.`, true);
+      }
+    } finally {
+      if (isCurrent(operation)) {
+        busy = false;
+        zoomInput.disabled = false;
+        captureButton.disabled = false;
+      }
+    }
+  });
 
   function clearPhoto() {
     record = null;
@@ -69,7 +102,11 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     notify("Aguardando permissão para abrir a câmera...");
     try {
       const camera = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 } },
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 3840 },
+          height: { ideal: 2160 },
+        },
         audio: false,
       });
       if (!isCurrent(operation)) {
@@ -81,7 +118,21 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
       document.querySelector("#camera-view").hidden = false;
       await video.play();
       if (!isCurrent(operation)) return;
-      cameraFeed.style.setProperty("--camera-ratio", video.videoWidth / video.videoHeight);
+      const track = stream.getVideoTracks()[0];
+      const zoom = track.getCapabilities?.().zoom;
+      const supportsZoom = Number.isFinite(zoom?.min) && Number.isFinite(zoom?.max) &&
+        zoom.max > zoom.min;
+      zoomControl.hidden = !supportsZoom;
+      zoomHelp.textContent = supportsZoom
+        ? "Zoom do aparelho: ajuste sem sair de um local seguro. Pode ser digital."
+        : "Zoom não disponível neste navegador. Se a placa não estiver legível, não se aproxime.";
+      if (supportsZoom) {
+        zoomInput.min = String(zoom.min);
+        zoomInput.max = String(zoom.max);
+        zoomInput.step = String(zoom.step > 0 ? zoom.step : 0.1);
+        zoomInput.value = String(track.getSettings().zoom ?? zoom.min);
+        zoomValue.textContent = `${Number(zoomInput.value).toFixed(1)}×`;
+      }
       startButton.hidden = true;
       captureButton.hidden = false;
       stopButton.hidden = false;
@@ -117,6 +168,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     busy = true;
     const operation = ++operationId;
     captureButton.disabled = true;
+    zoomInput.disabled = true;
     captureLabel.textContent = "Obtendo GPS…";
     cameraView.setAttribute("aria-busy", "true");
     stopButton.disabled = true;
@@ -140,19 +192,20 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
           !video.videoWidth || !video.videoHeight || video.readyState < 2) {
         throw new Error("A câmera ainda não tem uma imagem disponível. Tente novamente.");
       }
-      const cropWidth = video.videoWidth * 0.9;
-      const cropHeight = Math.min(video.videoHeight, cropWidth / 3.2);
-      canvas.width = Math.min(1600, Math.round(cropWidth));
-      canvas.height = Math.round(canvas.width * cropHeight / cropWidth);
+      const crop = calculateCaptureCrop(
+        video.videoWidth, video.videoHeight, video.clientWidth, video.clientHeight,
+      );
+      canvas.width = crop.outputWidth;
+      canvas.height = crop.outputHeight;
       const context = canvas.getContext("2d");
       if (!context) throw new Error("O navegador não conseguiu preparar a foto.");
       context.drawImage(video,
-        (video.videoWidth - cropWidth) / 2, (video.videoHeight - cropHeight) / 2,
-        cropWidth, cropHeight, 0, 0, canvas.width, canvas.height);
+        crop.x, crop.y, crop.width, crop.height, 0, 0, canvas.width, canvas.height);
       record = { ...location, capturedAt };
       stopCamera();
       startButton.disabled = true;
       review.hidden = false;
+      review.scrollIntoView({ block: "start", behavior: "instant" });
       clearButton.disabled = true;
       confirmForm.querySelector("button").disabled = true;
       locationInfo.textContent =
@@ -205,6 +258,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
         locationRequest = null;
         busy = false;
         captureButton.disabled = false;
+        zoomInput.disabled = false;
         captureLabel.textContent = "Tirar foto";
         cameraView.removeAttribute("aria-busy");
         stopButton.disabled = false;
@@ -246,7 +300,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     busy = false;
     captureLabel.textContent = "Tirar foto";
     cameraView.removeAttribute("aria-busy");
-    for (const button of [startButton, captureButton, stopButton, clearButton]) {
+    for (const button of [startButton, captureButton, stopButton, clearButton, zoomInput]) {
       button.disabled = false;
     }
   });
