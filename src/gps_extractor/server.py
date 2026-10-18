@@ -13,6 +13,7 @@ _ASSETS = {
     "/parser.mjs": ("parser.mjs", "text/javascript; charset=utf-8"),
     "/capture.mjs": ("capture.mjs", "text/javascript; charset=utf-8"),
     "/capture-data.mjs": ("capture-data.mjs", "text/javascript; charset=utf-8"),
+    "/camera.png": ("camera.png", "image/png"),
 }
 _MAX_BODY_SIZE = 1_048_576
 

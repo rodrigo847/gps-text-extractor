@@ -105,7 +105,10 @@ node --test tests/test_static_parser.mjs
 
 ## Capturar foto da placa com GPS e OCR
 
-Na interface simplificada, a camera e a acao principal. Um unico menu
+Na interface simplificada, a camera e a acao principal. O cartao **Abrir camera**
+usa a imagem de camera fornecida para o projeto; toda a area e um botao,
+acionavel por toque, clique, Enter ou espaco. A imagem e servida localmente,
+sem depender de um link externo. Um unico menu
 **Mais opções**, fechado inicialmente, guarda **Privacidade e uso seguro**,
 **Sobre o Sinaliza** e **Colar texto ou coordenadas**. Esses itens tambem
 comecam fechados. O envio HTTP fica em

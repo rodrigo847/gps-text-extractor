@@ -35,6 +35,12 @@ class ServerTests(unittest.TestCase):
                     self.assertIn("javascript", response.headers["Content-Type"])
                     self.assertGreater(len(response.read()), 0)
 
+    def test_camera_image_is_served_as_png(self):
+        with urlopen(f"{self.base_url}/camera.png") as response:
+            self.assertEqual(response.status, 200)
+            self.assertEqual(response.headers["Content-Type"], "image/png")
+            self.assertTrue(response.read().startswith(b"\x89PNG\r\n\x1a\n"))
+
     def test_extract_endpoint_returns_fields(self):
         request = Request(
             f"{self.base_url}/api/extract",

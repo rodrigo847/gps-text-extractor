@@ -350,6 +350,72 @@ h2 {
   margin-bottom: 18px;
 }
 
+.camera-launch {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 16px;
+  border: 1px solid #d7e8de;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #f3faf6, #e6f2eb);
+  color: #174e37;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 5px 16px rgba(23, 108, 76, 0.06);
+  transition: background 160ms ease, box-shadow 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.camera-launch-art {
+  display: grid;
+  width: 112px;
+  height: 112px;
+  margin-bottom: 4px;
+  place-items: center;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(23, 50, 37, 0.15);
+}
+
+.camera-launch-art img {
+  display: block;
+  width: 96px;
+  height: 96px;
+}
+
+.camera-launch-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.camera-launch-hint {
+  color: #527362;
+  font-size: 12px;
+}
+
+@media (hover: hover) {
+  .camera-launch:hover:not(:disabled) {
+    background: #e0efe6;
+    box-shadow: 0 8px 24px rgba(23, 108, 76, 0.13);
+  }
+}
+
+.camera-launch:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 4px;
+}
+
+.camera-launch:active:not(:disabled) {
+  background: #d6e9de;
+}
+
+.camera-launch:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .app-details {
   margin-top: 14px;
   font-size: 12px;

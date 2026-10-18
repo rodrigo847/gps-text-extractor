@@ -33,9 +33,13 @@
         <section class="results-card capture-card" aria-labelledby="capture-heading">
           <h2 id="capture-heading">Ler uma placa</h2>
           <p class="map-copy">Foto e GPS com sua permissão. Revise a leitura antes de confirmar.</p>
-          <div class="button-group">
-            <button id="start-camera" class="primary-button" type="button">Abrir câmera</button>
-          </div>
+          <button id="start-camera" class="camera-launch" type="button">
+            <span class="camera-launch-art">
+              <img src="./camera.png" width="512" height="512" alt="">
+            </span>
+            <span class="camera-launch-title">Abrir câmera</span>
+            <span class="camera-launch-hint">Toque para fotografar a placa</span>
+          </button>
           <div id="camera-view" hidden>
             <div class="camera-feed">
               <video id="camera-preview" autoplay muted playsinline></video>
