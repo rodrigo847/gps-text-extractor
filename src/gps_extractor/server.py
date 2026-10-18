@@ -11,6 +11,8 @@ _ASSETS = {
     "/styles.css": ("styles.css", "text/css; charset=utf-8"),
     "/app.js": ("app.js", "text/javascript; charset=utf-8"),
     "/parser.mjs": ("parser.mjs", "text/javascript; charset=utf-8"),
+    "/capture.mjs": ("capture.mjs", "text/javascript; charset=utf-8"),
+    "/capture-data.mjs": ("capture-data.mjs", "text/javascript; charset=utf-8"),
 }
 _MAX_BODY_SIZE = 1_048_576
 

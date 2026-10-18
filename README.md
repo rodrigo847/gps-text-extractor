@@ -1,9 +1,28 @@
-# GPS Text Extractor
+# Sinaliza
 
-Projeto em fase de descoberta. O primeiro prototipo tenta extrair data/hora,
-coordenadas e placas brasileiras de um texto livre. Isso e apenas uma hipotese
-inicial baseada no trecho de codigo recebido; o objetivo real do projeto ainda
-precisa ser confirmado com seu autor.
+**Um registro pode ajudar. Sua seguranca vem primeiro.**
+
+Prototipo para organizar relatos de possiveis avistamentos de veiculos:
+extrair campos de texto, revisar placas por OCR e visualizar coordenadas.
+A proposta social e apoiar, no futuro, a triagem de informacoes por autoridades,
+sem incentivar abordagens, perseguicoes ou exposicao publica de pessoas.
+O escopo ainda precisa ser validado com o autor do projeto e potenciais parceiros.
+
+## Escopo e seguranca
+
+- Projeto independente, sem vinculo oficial com autoridades.
+- Nao envia denuncias, consulta registros de roubo/furto ou identifica proprietarios.
+- Uma placa reconhecida ou um ponto no mapa nao comprovam crime ou avistamento.
+- Nao se aproxime para fotografar, nao siga veiculos e nao confronte ninguem.
+  Nao divulgue placas e localizacoes como acusacoes; use os canais oficiais.
+- Em risco imediato no Brasil, procure um local seguro e ligue 190.
+- Teste a camera com placas ficticias ou capturas autorizadas.
+- Integracoes oficiais exigiriam parceria formal, base legal, controle de acesso,
+  protecao de dados, medidas contra relatos falsos e revisao humana.
+
+Sinaliza e um nome de trabalho, sem verificacao de marca ou dominio.
+O nome tecnico do pacote (`gps-text-extractor`) e os links existentes foram
+preservados para nao interromper a instalacao e o acesso a demonstracao.
 
 ## Demonstracao
 
@@ -15,7 +34,8 @@ https://rodrigo847.github.io/gps-text-extractor/
 [Abrir o fluxograma online](https://rodrigo847.github.io/gps-text-extractor/fluxograma.svg).
 O [arquivo original](docs/fluxograma-projeto.svg) tambem esta no repositorio.
 O diagrama separa a demonstracao online, a integracao HTTP local e a futura
-integracao com um GPS real pela internet. Pode ser aberto no navegador ou
+integracao com um GPS externo pela internet, alem do novo fluxo de camera com
+GPS e OCR no navegador. Pode ser aberto no navegador ou
 inserido em uma apresentacao como imagem vetorial.
 
 ## Requisitos
@@ -60,7 +80,8 @@ sem placa, tanto na analise do navegador quanto na resposta HTTP local.
 
 O mapa so e consultado apos clicar no botao. O provedor recebe o IP e as
 coordenadas/regiao consultada, mas nao recebe a placa nem o texto do relato.
-Nao ha geolocalizacao do aparelho, armazenamento de historico ou rastreamento.
+Na analise de texto nao ha geolocalizacao do aparelho. O fluxo de camera abaixo
+solicita essa permissao explicitamente. Nao ha historico ou rastreamento.
 Ao editar o texto, o mapa anterior e removido ate uma nova analise.
 
 **Importante:** encontrar placa e coordenadas no mesmo texto nao comprova que
@@ -74,6 +95,52 @@ Para validar a parte do navegador (Node.js instalado), execute:
 
 ```powershell
 node --test tests/test_static_parser.mjs
+```
+
+## Capturar foto da placa com GPS e OCR
+
+Na nova secao **Ler placa pela camera**, siga este fluxo:
+
+1. Abra a pagina em um celular por HTTPS (ou use localhost no computador).
+2. Clique em **Abrir camera** e permita o acesso. A camera traseira e preferida,
+   mas o navegador pode oferecer outra camera.
+3. Use uma placa ficticia ou captura autorizada. Enquadre a placa na faixa
+   apenas se ja estiver legivel sem se aproximar. Nunca siga veiculos,
+   confronte pessoas ou utilize a camera enquanto dirige.
+4. Clique em **Capturar foto com GPS e ler placa** e permita a localizacao.
+   O app solicita uma posicao nova e so captura a imagem depois de recebe-la.
+   Posicoes com mais de 15 segundos de diferenca da captura sao recusadas.
+5. O recorte da placa e processado por Tesseract.js 6.0.1 no navegador.
+   A camera e desligada apos capturar. Revise a foto e o texto reconhecido.
+6. Confira ou corrija a placa, confira as coordenadas e a precisao estimada,
+   marque a confirmacao e clique em **Confirmar dados para o mapa**.
+7. Clique em **Carregar mapa online** para consultar o ponto do aparelho.
+
+A foto nao recebe coordenadas EXIF: a imagem recortada e as coordenadas ficam
+associadas em memoria nesta sessao. Nao ha upload da imagem, envio automatico
+para API, banco de dados ou exportacao persistente desse registro.
+**Descartar foto e dados** limpa a captura; sair da pagina desliga a camera.
+Este fluxo nao le fotos antigas da galeria nem seus metadados.
+
+O ponto representa a posicao do aparelho que capturou a foto, nao a posicao
+comprovada do veiculo. GPS pode ser impreciso ou adulterado. A tela informa
+a precisao estimada em metros; nao aplica um limite automatico de precisao.
+O OCR pode trocar caracteres ou nao encontrar placa: sem resultado unico,
+e preciso digitar/revisar a placa. Falhas de OCR permitem revisao manual da
+foto capturada; falhas de GPS impedem associar a foto ao mapa.
+
+O motor, o worker e os dados de idioma do OCR sao baixados de CDNs externos
+no primeiro uso, podendo exigir novos downloads depois. Esses provedores
+recebem dados de conexao (como IP), mas a aplicacao nao envia a foto, placa ou
+coordenadas a eles para reconhecimento. O mapa consulta outro provedor, apenas
+apos clique, conforme descrito acima. Camera e GPS dependem das permissoes do
+usuario e do suporte do navegador. Nao ha reconhecimento especializado de
+veiculos, consulta a cadastros, alertas de veiculo procurado ou rastreamento.
+
+Teste os modulos do navegador com Node.js:
+
+```powershell
+node --test tests/test_static_parser.mjs tests/test_capture_data.mjs
 ```
 
 ## Receber texto de um GPS/app por HTTP

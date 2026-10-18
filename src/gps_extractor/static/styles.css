@@ -118,10 +118,10 @@ p {
 h1 {
   margin-bottom: 14px;
   font-family: "Segoe UI", Arial, sans-serif;
-  font-size: clamp(42px, 7vw, 62px);
+  font-size: clamp(30px, 4.5vw, 44px);
   font-weight: 700;
-  letter-spacing: -3.8px;
-  line-height: 1.06;
+  letter-spacing: -1.5px;
+  line-height: 1.18;
 }
 
 h1 span {
@@ -346,6 +346,74 @@ h2 {
   overflow-wrap: anywhere;
 }
 
+.capture-card {
+  margin-bottom: 18px;
+}
+
+.safety-card {
+  margin-bottom: 18px;
+  border-left: 4px solid var(--green);
+}
+
+#camera-view {
+  position: relative;
+  margin-top: 16px;
+}
+
+#camera-preview,
+#photo-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.camera-guide {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  width: 90%;
+  aspect-ratio: 3.2;
+  transform: translateY(-50%);
+  border: 3px solid #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px var(--green);
+  pointer-events: none;
+}
+
+#confirm-photo {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+#photo-plate {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  text-transform: uppercase;
+}
+
+.capture-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.6;
+}
+
+.capture-consent input {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+#capture-status.error {
+  color: #b34343;
+}
+
 .map-copy a {
   color: var(--green);
 }
@@ -387,8 +455,8 @@ footer {
   }
 
   h1 {
-    font-size: clamp(42px, 12vw, 54px);
-    letter-spacing: -2.8px;
+    font-size: clamp(28px, 8vw, 36px);
+    letter-spacing: -1px;
   }
 
   .intro-copy {

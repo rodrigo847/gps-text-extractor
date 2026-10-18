@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1320" viewBox="0 0 1400 1320" style="max-width:100%;height:auto" role="img" aria-labelledby="title description">
-  <title id="title">Campo GPS — fluxo do projeto</title>
-  <desc id="description">Apresentação dos dois fluxos disponíveis: análise de texto no navegador e envio HTTP ao servidor local. A integração com um GPS real pela internet é uma etapa futura.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1630" viewBox="0 0 1400 1630" style="max-width:100%;height:auto" role="img" aria-labelledby="title description">
+  <title id="title">Sinaliza — fluxo do projeto</title>
+  <desc id="description">Análise de texto, envio HTTP local e novo protótipo de câmera com GPS e OCR no navegador. A integração com um GPS externo pela internet é uma etapa futura.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#52856b"/>
@@ -25,10 +25,10 @@
     </style>
   </defs>
 
-  <rect width="1400" height="1320" fill="#f3f7f4"/>
-  <text x="60" y="55" class="eyebrow">CAMPO / GPS · VISÃO DO PROTÓTIPO</text>
-  <text x="60" y="111" class="title">Da mensagem à informação organizada.</text>
-  <text x="60" y="150" class="subtitle">O sistema lê um texto e identifica data, hora, coordenadas e placa quando reconhecidas.</text>
+  <rect width="1400" height="1630" fill="#f3f7f4"/>
+  <text x="60" y="55" class="eyebrow">SINALIZA · COLABORAÇÃO RESPONSÁVEL</text>
+  <text x="60" y="111" class="title">Um registro pode ajudar. Sua segurança vem primeiro.</text>
+  <text x="60" y="150" class="subtitle">Organiza possíveis avistamentos. Não envia denúncias, identifica proprietários ou confirma crimes.</text>
 
   <rect x="60" y="184" width="1280" height="248" rx="20" fill="#fff" stroke="#dce7df"/>
   <text x="88" y="225" class="section-title">1. Demonstração online</text>
@@ -89,7 +89,7 @@
   <text x="88" y="876" class="label">O GitHub Pages não executa esta API. Não existe ainda atualização automática do app a partir de outro GPS.</text>
 
   <rect x="60" y="924" width="1280" height="249" rx="20" fill="#fffcf4" stroke="#e6d4a9" stroke-dasharray="8 5"/>
-  <text x="88" y="965" class="section-title">3. Integração com um GPS real pela internet</text>
+  <text x="88" y="965" class="section-title">3. Integração com GPS externo pela internet</text>
   <rect x="1104" y="942" width="208" height="30" rx="15" fill="#faedcb"/>
   <text x="1208" y="962" text-anchor="middle" class="badge" style="fill:#896619">PRÓXIMA ETAPA</text>
   <text x="88" y="996" class="body">Depende de confirmar o equipamento, o formato das mensagens e o uso esperado pelo cliente.</text>
@@ -107,7 +107,25 @@
   <text x="1132" y="1086" text-anchor="middle" class="node-copy">Mecanismo de atualização a definir</text>
   <text x="88" y="1149" class="label">Mapa de um ponto disponível após clique; alertas, histórico e rastreamento contínuo ainda não foram implementados.</text>
 
-  <text x="60" y="1218" class="eyebrow">DECISÕES PARA A PRÓXIMA CONVERSA</text>
-  <text x="60" y="1250" class="body">Qual GPS envia os dados? · Como é a mensagem real? · Quem acessa? · O que deve aparecer e ser salvo?</text>
-  <text x="60" y="1290" class="label">Versão de apresentação · 18/10/2026 · Escopo inicial sujeito à validação com o cliente.</text>
+  <rect x="60" y="1197" width="1280" height="275" rx="20" fill="#fff" stroke="#dce7df"/>
+  <text x="88" y="1238" class="section-title">4. Foto da placa + GPS do aparelho</text>
+  <rect x="1104" y="1215" width="208" height="30" rx="15" fill="#e7eff9"/>
+  <text x="1208" y="1235" text-anchor="middle" class="badge" style="fill:#38628b">NOVO PROTÓTIPO</text>
+  <text x="88" y="1269" class="body">Câmera e localização com permissão explícita. OCR no navegador, sem upload da foto.</text>
+  <rect x="88" y="1290" width="350" height="85" rx="12" class="node"/>
+  <text x="263" y="1325" text-anchor="middle" class="node-title">Captura ao vivo com GPS</text>
+  <text x="263" y="1352" text-anchor="middle" class="node-copy">Posição, precisão e horário do aparelho</text>
+  <path d="M 438 1332 H 518" class="connector"/>
+  <rect x="520" y="1290" width="350" height="85" rx="12" class="node"/>
+  <text x="695" y="1325" text-anchor="middle" class="node-title">OCR + revisão humana</text>
+  <text x="695" y="1352" text-anchor="middle" class="node-copy">Usuário confere ou corrige a placa</text>
+  <path d="M 870 1332 H 950" class="connector"/>
+  <rect x="952" y="1290" width="360" height="85" rx="12" fill="#edf6ef" stroke="#bcd8c5"/>
+  <text x="1132" y="1325" text-anchor="middle" class="node-title">Confirmar e consultar o mapa</text>
+  <text x="1132" y="1352" text-anchor="middle" class="node-copy">Sem confirmação não exibe o ponto</text>
+  <text x="88" y="1408" class="label">O ponto é do aparelho, não a localização comprovada do veículo. Sem GPS válido, não associa foto e mapa.</text>
+  <text x="88" y="1437" class="label">Dados temporários nesta sessão; sem histórico, envio da foto à API, cadastro de veículos ou rastreamento.</text>
+  <text x="60" y="1520" class="eyebrow">DECISÕES PARA A PRÓXIMA CONVERSA</text>
+  <text x="60" y="1552" class="body">Parceria formal · Privacidade e acesso restrito · Revisão humana · Prevenção de relatos falsos</text>
+  <text x="60" y="1592" class="label">Protótipo independente · Não se aproxime, siga veículos ou confronte pessoas. Use os canais oficiais.</text>
 </svg>

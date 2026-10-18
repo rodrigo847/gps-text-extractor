@@ -27,6 +27,14 @@ class ServerTests(unittest.TestCase):
             self.assertEqual(response.status, 200)
             self.assertIn(b"lang=\"pt-BR\"", response.read())
 
+    def test_camera_modules_are_served_as_javascript(self):
+        for filename in ("capture.mjs", "capture-data.mjs"):
+            with self.subTest(filename=filename):
+                with urlopen(f"{self.base_url}/{filename}") as response:
+                    self.assertEqual(response.status, 200)
+                    self.assertIn("javascript", response.headers["Content-Type"])
+                    self.assertGreater(len(response.read()), 0)
+
     def test_extract_endpoint_returns_fields(self):
         request = Request(
             f"{self.base_url}/api/extract",

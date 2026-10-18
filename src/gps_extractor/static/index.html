@@ -4,34 +4,96 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f4f7f5">
-    <title>GPS | Extrator de texto</title>
+    <title>Sinaliza | Registro responsável de possíveis avistamentos</title>
+    <meta name="description" content="Protótipo para organizar relatos, revisar placas por OCR e visualizar coordenadas. Sem envio às autoridades ou consulta a cadastros de veículos.">
     <link rel="stylesheet" href="./styles.css">
     <script type="module" src="./app.js"></script>
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <a class="brand" href="./" aria-label="GPS, inicio">
+        <a class="brand" href="./" aria-label="Sinaliza, início">
           <span class="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M19 10.2c0 5-7 10.3-7 10.3S5 15.2 5 10.2a7 7 0 1 1 14 0Z" />
               <circle cx="12" cy="10" r="2.3" />
             </svg>
           </span>
-          <span>campo<span class="brand-light">/gps</span></span>
+          <span>Sinaliza</span>
         </a>
         <span class="prototype-tag"><span></span> protótipo</span>
       </header>
 
       <section class="intro" aria-labelledby="page-title">
-        <p class="eyebrow">EXTRAÇÃO INTELIGENTE</p>
-        <h1 id="page-title">Do texto para<br><span>o que importa.</span></h1>
+        <p class="eyebrow">COLABORAÇÃO RESPONSÁVEL</p>
+        <h1 id="page-title">Um registro pode ajudar.<br><span>Sua segurança vem primeiro.</span></h1>
         <p class="intro-copy">
-          Cole um relato e encontre data, localização e placa em segundos.
+          Organize um possível avistamento com texto, foto e localização.
+          Uma proposta para apoiar, no futuro, a triagem por autoridades.
         </p>
       </section>
 
       <section class="workspace" aria-label="Extrator de informações">
+        <aside class="results-card safety-card" aria-labelledby="safety-heading">
+          <h2 id="safety-heading">Observe com segurança. Não intervenha.</h2>
+          <p class="map-copy">
+            Não se aproxime para fotografar, não siga veículos e não confronte ninguém.
+            Não publique placas ou localizações como acusações. Se houver risco imediato
+            no Brasil, procure um local seguro e ligue 190.
+          </p>
+          <p class="map-copy">
+            <strong>Protótipo independente, sem vínculo oficial.</strong>
+            Não envia denúncias às autoridades, não consulta registros de roubo ou furto
+            e não identifica proprietários. Uma placa ou um ponto no mapa não comprovam
+            crime. Para comunicar uma ocorrência, utilize os canais oficiais.
+          </p>
+        </aside>
+        <section class="results-card capture-card" aria-labelledby="capture-heading">
+          <p class="eyebrow">FOTO + LOCALIZAÇÃO DO APARELHO</p>
+          <h2 id="capture-heading">Ler placa pela câmera</h2>
+          <p class="map-copy">
+            Teste com uma placa fictícia ou uma captura autorizada, em local seguro.
+            Use o enquadramento apenas se a placa já estiver legível sem se aproximar.
+            O OCR pode errar: revise sempre os caracteres antes de confirmar.
+            Não use a câmera enquanto dirige.
+          </p>
+          <p class="map-copy">
+            Câmera e GPS dependem da sua permissão. A imagem e o texto OCR ficam neste
+            navegador, sem envio ao backend. O motor OCR é baixado de provedores externos,
+            que recebem seu IP, mas não a foto. Não há consulta a cadastros de veículos.
+          </p>
+          <div class="button-group">
+            <button id="start-camera" class="secondary-button" type="button">Abrir câmera</button>
+            <button id="capture-photo" class="primary-button" type="button" hidden>Capturar foto com GPS e ler placa</button>
+            <button id="stop-camera" class="secondary-button" type="button" hidden>Desligar câmera</button>
+          </div>
+          <div id="camera-view" hidden>
+            <video id="camera-preview" autoplay muted playsinline></video>
+            <div class="camera-guide" aria-hidden="true"></div>
+          </div>
+          <p id="capture-status" class="map-copy" role="status">Use HTTPS ou localhost. Enquadre apenas a placa na faixa da câmera.</p>
+          <section id="photo-review" hidden aria-label="Revisão da captura">
+            <canvas id="photo-preview" role="img" aria-label="Foto recortada da placa para revisão"></canvas>
+            <p id="photo-location" class="map-copy"></p>
+            <details>
+              <summary>Ver texto bruto do OCR</summary>
+              <textarea id="ocr-text" rows="2" readonly aria-label="Texto bruto reconhecido pelo OCR"></textarea>
+            </details>
+            <form id="confirm-photo">
+              <label for="photo-plate">Placa (revise e corrija se necessário)</label>
+              <input id="photo-plate" name="plate" maxlength="10" autocomplete="off"
+                autocapitalize="characters" spellcheck="false" placeholder="ABC1D23" required>
+              <label class="capture-consent">
+                <input id="confirm-location" type="checkbox" required>
+                Entendo que o ponto é a posição do aparelho nesta captura, não a localização
+                comprovada do veículo. Conferi a placa e a precisão informada.
+              </label>
+              <button class="primary-button" type="submit" disabled>Confirmar dados para o mapa</button>
+            </form>
+            <button id="clear-photo" class="secondary-button" type="button">Descartar foto e dados</button>
+          </section>
+        </section>
+
         <form id="extract-form" class="input-card">
           <div class="card-heading">
             <label for="source-text">Texto do relato</label>
@@ -71,8 +133,9 @@
           <h2 id="map-heading">Ponto no mapa</h2>
           <p id="map-caption" class="map-copy"></p>
           <p class="map-copy">
-            O ponto usa as coordenadas deste texto. A placa é apenas uma identificação
-            informada no relato: não há confirmação de avistamento nem rastreamento.
+            O ponto usa as coordenadas do texto ou do aparelho na captura, conforme a origem
+            indicada acima. A placa é uma identificação revisável: não há confirmação de
+            avistamento nem rastreamento.
           </p>
           <p class="map-copy">
             Ao carregar, o OpenStreetMap receberá seu IP e a região consultada,
@@ -93,7 +156,7 @@
         </p>
       </section>
 
-      <footer>Uma primeira ideia, aberta a novas direções.</footer>
+      <footer>Sinaliza · Tecnologia para colaborar com responsabilidade. Protótipo sem vínculo oficial.</footer>
     </main>
   </body>
 </html>

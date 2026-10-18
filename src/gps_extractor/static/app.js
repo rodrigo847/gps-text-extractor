@@ -1,4 +1,5 @@
 import { createMapLocation, extractFields } from "./parser.mjs";
+import { initializeCapture } from "./capture.mjs";
 
 const form = document.querySelector("#extract-form");
 const textInput = document.querySelector("#source-text");
@@ -19,6 +20,7 @@ let mapLocation = null;
 
 function resetMap() {
   mapLocation = null;
+  mapCaption.textContent = "";
   mapFrame.removeAttribute("src");
   mapFrame.hidden = true;
   mapSection.hidden = true;
@@ -27,7 +29,7 @@ function resetMap() {
   loadMapButton.hidden = false;
 }
 
-function prepareMap(fields) {
+function prepareMap(fields, sourceMessage) {
   resetMap();
   mapLocation = createMapLocation(fields);
   if (!mapLocation) {
@@ -37,6 +39,7 @@ function prepareMap(fields) {
     fields.placa ? `Placa informada: ${fields.placa}` : "Placa não informada",
     `Coordenadas: ${fields.latitude}, ${fields.longitude}`,
     [fields.data, fields.hora].filter(Boolean).join(" "),
+    sourceMessage,
   ].filter(Boolean).join(" · ");
   mapSection.hidden = false;
 }
@@ -65,8 +68,8 @@ function updateCharacterCount() {
   charCount.textContent = `${count} ${count === 1 ? "caractere" : "caracteres"}`;
 }
 
-function renderFields(fields, message) {
-  prepareMap(fields);
+function renderFields(fields, message, sourceMessage) {
+  prepareMap(fields, sourceMessage);
   resultList.replaceChildren();
   const entries = Object.entries(fields);
 
@@ -157,3 +160,17 @@ sendApiButton.addEventListener("click", async () => {
 });
 
 updateCharacterCount();
+
+initializeCapture({
+  onInvalidate() {
+    resetMap();
+    results.hidden = true;
+    resultList.replaceChildren();
+    resultCount.textContent = "";
+    statusMessage.textContent = "Resultados anteriores removidos. Analise um texto ou confirme a captura revisada.";
+    statusMessage.classList.remove("error");
+  },
+  onConfirm(fields, sourceMessage) {
+    renderFields(fields, "Foto e localização revisadas pelo usuário.", sourceMessage);
+  },
+});
