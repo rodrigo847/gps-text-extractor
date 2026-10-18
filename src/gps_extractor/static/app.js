@@ -167,7 +167,7 @@ initializeCapture({
     results.hidden = true;
     resultList.replaceChildren();
     resultCount.textContent = "";
-    statusMessage.textContent = "Resultados anteriores removidos. Analise um texto ou confirme a captura revisada.";
+    statusMessage.textContent = "Protótipo independente. Não envia denúncias às autoridades.";
     statusMessage.classList.remove("error");
   },
   onConfirm(fields, sourceMessage) {

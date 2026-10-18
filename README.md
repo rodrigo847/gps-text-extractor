@@ -99,9 +99,10 @@ node --test tests/test_static_parser.mjs
 
 ## Capturar foto da placa com GPS e OCR
 
-Na interface simplificada, a camera e a acao principal. Informacoes detalhadas
-ficam em **Privacidade e uso seguro** e **Sobre o Sinaliza**. O formulario de texto
-esta em **Prefere colar um texto ou coordenadas?**, e o envio HTTP em
+Na interface simplificada, a camera e a acao principal. Um unico menu
+**Mais opções**, fechado inicialmente, guarda **Privacidade e uso seguro**,
+**Sobre o Sinaliza** e **Colar texto ou coordenadas**. Esses itens tambem
+comecam fechados. O envio HTTP fica em
 **Teste tecnico da API local**. Os avisos essenciais e a revisao da captura
 continuam visiveis no momento de uso.
 

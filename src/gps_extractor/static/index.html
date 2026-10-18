@@ -57,18 +57,6 @@
             <p id="zoom-help"></p>
           </div>
           <p id="capture-status" class="map-copy" role="status"></p>
-          <details class="app-details">
-            <summary>Privacidade e uso seguro</summary>
-            <p class="map-copy">
-              Foto e OCR ficam neste navegador, sem upload. O motor OCR é baixado de
-              provedores externos, que recebem seu IP, não a foto. A leitura pode errar.
-            </p>
-            <p class="map-copy">
-              Teste com uma placa fictícia ou captura autorizada. Não se aproxime para
-              fotografar, não dirija usando a câmera e não publique acusações.
-              Requer HTTPS ou localhost.
-            </p>
-          </details>
           <section id="photo-review" hidden aria-label="Revisão da captura">
             <canvas id="photo-preview" role="img" aria-label="Foto recortada da placa para revisão"></canvas>
             <p id="photo-location" class="map-copy"></p>
@@ -90,8 +78,10 @@
           </section>
         </section>
 
-        <details class="app-details text-option">
-          <summary>Prefere colar um texto ou coordenadas?</summary>
+        <details id="app-options" class="app-details text-option">
+          <summary>Mais opções</summary>
+          <details class="app-details">
+            <summary>Colar texto ou coordenadas</summary>
           <form id="extract-form" class="input-card">
           <div class="card-heading">
             <label for="source-text">Texto do relato</label>
@@ -115,6 +105,27 @@
             <button class="secondary-button" id="send-api" type="button">Testar envio HTTP</button>
           </details>
         </form>
+          </details>
+          <details class="app-details">
+            <summary>Privacidade e uso seguro</summary>
+            <p class="map-copy">
+              Foto e OCR ficam neste navegador, sem upload. O motor OCR é baixado de
+              provedores externos, que recebem seu IP, não a foto. A leitura pode errar.
+            </p>
+            <p class="map-copy">
+              Teste com uma placa fictícia ou captura autorizada. Não se aproxime para
+              fotografar, não dirija usando a câmera e não publique acusações.
+              Requer HTTPS ou localhost.
+            </p>
+          </details>
+          <details class="app-details">
+            <summary>Sobre o Sinaliza</summary>
+            <p class="map-copy">
+              Sem vínculo oficial, consulta de roubo/furto ou identificação de proprietários.
+              Placa e coordenadas não comprovam crime. Para comunicar uma ocorrência,
+              use os canais oficiais. Em risco imediato no Brasil, vá para um local seguro e ligue 190.
+            </p>
+          </details>
         </details>
 
         <section id="results" class="results-card" aria-live="polite" hidden>
@@ -150,14 +161,6 @@
         <p id="status-message" class="status-message" role="status">
           Protótipo independente. Não envia denúncias às autoridades.
         </p>
-        <details class="app-details">
-          <summary>Sobre o Sinaliza</summary>
-          <p class="map-copy">
-            Sem vínculo oficial, consulta de roubo/furto ou identificação de proprietários.
-            Placa e coordenadas não comprovam crime. Para comunicar uma ocorrência,
-            use os canais oficiais. Em risco imediato no Brasil, vá para um local seguro e ligue 190.
-          </p>
-        </details>
       </section>
 
       <footer>Sinaliza · Colaboração responsável.</footer>
