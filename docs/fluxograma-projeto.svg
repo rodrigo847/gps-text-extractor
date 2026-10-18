@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1320" viewBox="0 0 1400 1320" style="max-width:100%;height:auto" role="img" aria-labelledby="title description">
+  <title id="title">Campo GPS — fluxo do projeto</title>
+  <desc id="description">Apresentação dos dois fluxos disponíveis: análise de texto no navegador e envio HTTP ao servidor local. A integração com um GPS real pela internet é uma etapa futura.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52856b"/>
+    </marker>
+    <marker id="future-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b18a39"/>
+    </marker>
+    <style>
+      text { font-family: "Segoe UI", Arial, sans-serif; fill: #20382b; }
+      .eyebrow { font-size: 14px; font-weight: 700; letter-spacing: 2px; fill: #527a62; }
+      .title { font-size: 42px; font-weight: 700; letter-spacing: -1px; }
+      .subtitle { font-size: 19px; fill: #63766b; }
+      .section-title { font-size: 23px; font-weight: 700; }
+      .body { font-size: 17px; fill: #63766b; }
+      .node-title { font-size: 19px; font-weight: 700; }
+      .node-copy { font-size: 16px; fill: #63766b; }
+      .badge { font-size: 13px; font-weight: 700; letter-spacing: .5px; }
+      .label { font-size: 14px; fill: #63766b; }
+      .node { fill: #fff; stroke: #dce7df; stroke-width: 1.5; }
+      .connector { fill: none; stroke: #52856b; stroke-width: 2.5; marker-end: url(#arrow); }
+      .future-connector { fill: none; stroke: #b18a39; stroke-width: 2.5; stroke-dasharray: 7 5; marker-end: url(#future-arrow); }
+    </style>
+  </defs>
+
+  <rect width="1400" height="1320" fill="#f3f7f4"/>
+  <text x="60" y="55" class="eyebrow">CAMPO / GPS · VISÃO DO PROTÓTIPO</text>
+  <text x="60" y="111" class="title">Da mensagem à informação organizada.</text>
+  <text x="60" y="150" class="subtitle">O sistema lê um texto e identifica data, hora, coordenadas e placa quando reconhecidas.</text>
+
+  <rect x="60" y="184" width="1280" height="248" rx="20" fill="#fff" stroke="#dce7df"/>
+  <text x="88" y="225" class="section-title">1. Demonstração online</text>
+  <rect x="1104" y="202" width="208" height="30" rx="15" fill="#e5f2e9"/>
+  <text x="1208" y="222" text-anchor="middle" class="badge" style="fill:#176c4c">JÁ DISPONÍVEL</text>
+  <text x="88" y="256" class="body">Acesso pelo link público, no computador ou no celular. Não exige instalar o aplicativo.</text>
+
+  <rect x="88" y="283" width="350" height="100" rx="12" class="node"/>
+  <text x="263" y="319" text-anchor="middle" class="node-title">Pessoa informa o texto</text>
+  <text x="263" y="348" text-anchor="middle" class="node-copy">Cola ou digita um relato no app</text>
+  <path d="M 438 333 H 518" class="connector"/>
+  <rect x="520" y="283" width="350" height="100" rx="12" class="node"/>
+  <text x="695" y="319" text-anchor="middle" class="node-title">Navegador analisa</text>
+  <text x="695" y="348" text-anchor="middle" class="node-copy">Sem enviar o texto ao servidor</text>
+  <path d="M 870 333 H 950" class="connector"/>
+  <rect x="952" y="283" width="360" height="100" rx="12" fill="#edf6ef" stroke="#bcd8c5"/>
+  <text x="1132" y="319" text-anchor="middle" class="node-title">App mostra os campos</text>
+  <text x="1132" y="348" text-anchor="middle" class="node-copy">Ou informa que nada foi reconhecido</text>
+  <text x="88" y="410" class="label">Hospedagem: GitHub Pages · O site não depende de o computador do desenvolvedor estar ligado.</text>
+
+  <rect x="60" y="456" width="1280" height="444" rx="20" fill="#fff" stroke="#dce7df"/>
+  <text x="88" y="497" class="section-title">2. Base de integração por HTTP</text>
+  <rect x="1104" y="474" width="208" height="30" rx="15" fill="#e7eff9"/>
+  <text x="1208" y="494" text-anchor="middle" class="badge" style="fill:#38628b">TESTADA LOCALMENTE</text>
+  <text x="88" y="528" class="body">Um programa de teste, ou o botão do app local, envia o texto e recebe uma resposta.</text>
+
+  <rect x="88" y="556" width="270" height="105" rx="12" class="node"/>
+  <text x="223" y="594" text-anchor="middle" class="node-title">Envio da mensagem</text>
+  <text x="223" y="624" text-anchor="middle" class="node-copy">Texto + ID opcional do GPS</text>
+  <path d="M 358 608 H 413" class="connector"/>
+  <text x="385" y="585" text-anchor="middle" class="label">POST</text>
+
+  <rect x="415" y="556" width="270" height="105" rx="12" class="node"/>
+  <text x="550" y="594" text-anchor="middle" class="node-title">Servidor local recebe</text>
+  <text x="550" y="624" text-anchor="middle" class="node-copy">Verifica o formato do envio</text>
+  <path d="M 685 608 H 740" class="connector"/>
+
+  <rect x="742" y="556" width="270" height="105" rx="12" class="node"/>
+  <text x="877" y="594" text-anchor="middle" class="node-title">Extrator processa</text>
+  <text x="877" y="624" text-anchor="middle" class="node-copy">Busca campos reconhecidos</text>
+  <path d="M 1012 608 H 1067" class="connector"/>
+
+  <rect x="1069" y="556" width="243" height="105" rx="12" fill="#edf6ef" stroke="#bcd8c5"/>
+  <text x="1190" y="594" text-anchor="middle" class="node-title">Resposta ao remetente</text>
+  <text x="1190" y="624" text-anchor="middle" class="node-copy">App local exibe os campos</text>
+
+  <path d="M 550 661 V 706" class="connector"/>
+  <text x="571" y="691" class="label">Envio inválido</text>
+  <rect x="415" y="708" width="270" height="70" rx="12" fill="#fff5f2" stroke="#ebc7bb"/>
+  <text x="550" y="738" text-anchor="middle" class="node-title">Mensagem de erro</text>
+  <text x="550" y="761" text-anchor="middle" class="node-copy">Remetente pode corrigir o envio</text>
+
+  <rect x="742" y="708" width="570" height="70" rx="12" fill="#f5f8f6"/>
+  <text x="764" y="737" class="node-copy">Se o texto for aceito, mas nenhum campo for reconhecido,</text>
+  <text x="764" y="761" class="node-copy">o serviço retorna uma lista de campos vazia.</text>
+  <text x="88" y="819" class="body">Limites atuais</text>
+  <text x="88" y="849" class="node-copy">Somente neste computador · Servidor Python precisa estar ligado · Não salva histórico</text>
+  <text x="88" y="876" class="label">O GitHub Pages não executa esta API. Não existe ainda atualização automática do app a partir de outro GPS.</text>
+
+  <rect x="60" y="924" width="1280" height="249" rx="20" fill="#fffcf4" stroke="#e6d4a9" stroke-dasharray="8 5"/>
+  <text x="88" y="965" class="section-title">3. Integração com um GPS real pela internet</text>
+  <rect x="1104" y="942" width="208" height="30" rx="15" fill="#faedcb"/>
+  <text x="1208" y="962" text-anchor="middle" class="badge" style="fill:#896619">PRÓXIMA ETAPA</text>
+  <text x="88" y="996" class="body">Depende de confirmar o equipamento, o formato das mensagens e o uso esperado pelo cliente.</text>
+
+  <rect x="88" y="1024" width="350" height="85" rx="12" fill="#fff" stroke="#e6d4a9"/>
+  <text x="263" y="1060" text-anchor="middle" class="node-title">GPS ou sistema externo</text>
+  <text x="263" y="1086" text-anchor="middle" class="node-copy">Protocolo e mensagem a confirmar</text>
+  <path d="M 438 1066 H 518" class="future-connector"/>
+  <rect x="520" y="1024" width="350" height="85" rx="12" fill="#fff" stroke="#e6d4a9"/>
+  <text x="695" y="1060" text-anchor="middle" class="node-title">Serviço online protegido</text>
+  <text x="695" y="1086" text-anchor="middle" class="node-copy">Hospedagem + autenticação + HTTPS</text>
+  <path d="M 870 1066 H 950" class="future-connector"/>
+  <rect x="952" y="1024" width="360" height="85" rx="12" fill="#fff" stroke="#e6d4a9"/>
+  <text x="1132" y="1060" text-anchor="middle" class="node-title">App recebe atualizações</text>
+  <text x="1132" y="1086" text-anchor="middle" class="node-copy">Mecanismo de atualização a definir</text>
+  <text x="88" y="1149" class="label">Mapa, alertas, histórico e rastreamento contínuo são possibilidades, não funcionalidades já implementadas.</text>
+
+  <text x="60" y="1218" class="eyebrow">DECISÕES PARA A PRÓXIMA CONVERSA</text>
+  <text x="60" y="1250" class="body">Qual GPS envia os dados? · Como é a mensagem real? · Quem acessa? · O que deve aparecer e ser salvo?</text>
+  <text x="60" y="1290" class="label">Versão de apresentação · 18/10/2026 · Escopo inicial sujeito à validação com o cliente.</text>
+</svg>

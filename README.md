@@ -10,6 +10,13 @@ precisa ser confirmado com seu autor.
 A interface publicada no GitHub Pages esta disponivel em:
 https://rodrigo847.github.io/gps-text-extractor/
 
+## Fluxograma para apresentacao
+
+[Abrir o fluxograma do projeto](docs/fluxograma-projeto.svg).
+O diagrama separa a demonstracao online, a integracao HTTP local e a futura
+integracao com um GPS real pela internet. Pode ser aberto no navegador ou
+inserido em uma apresentacao como imagem vetorial.
+
 ## Requisitos
 
 - Python 3.10 ou superior
