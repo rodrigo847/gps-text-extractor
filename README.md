@@ -5,6 +5,11 @@ coordenadas e placas brasileiras de um texto livre. Isso e apenas uma hipotese
 inicial baseada no trecho de codigo recebido; o objetivo real do projeto ainda
 precisa ser confirmado com seu autor.
 
+## Demonstracao
+
+A interface publicada no GitHub Pages esta disponivel em:
+https://rodrigo847.github.io/gps-text-extractor/
+
 ## Requisitos
 
 - Python 3.10 ou superior
