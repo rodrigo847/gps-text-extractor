@@ -1,5 +1,5 @@
 import { createMapLocation, extractFields } from "./parser.mjs";
-import { initializeCapture } from "./capture.mjs?v=20261020-capture-map-button";
+import { initializeCapture } from "./capture.mjs?v=20261020-gps-accuracy";
 
 const form = document.querySelector("#extract-form");
 const textInput = document.querySelector("#source-text");
@@ -16,7 +16,6 @@ const loadMapButton = document.querySelector("#load-map");
 const mapFrame = document.querySelector("#location-map");
 const mapHelp = document.querySelector("#map-help");
 const externalMap = document.querySelector("#external-map");
-const plotCaptureMapButton = document.querySelector("#plot-capture-map");
 let mapLocation = null;
 
 function resetMap() {
@@ -45,7 +44,7 @@ function prepareMap(fields, sourceMessage) {
   mapSection.hidden = false;
 }
 
-function showMap() {
+loadMapButton.addEventListener("click", () => {
   if (!mapLocation) {
     return;
   }
@@ -54,15 +53,6 @@ function showMap() {
   mapFrame.hidden = false;
   mapHelp.hidden = false;
   loadMapButton.hidden = true;
-}
-
-loadMapButton.addEventListener("click", showMap);
-plotCaptureMapButton.addEventListener("click", () => {
-  showMap();
-  mapSection.scrollIntoView({
-    block: "start",
-    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
-  });
 });
 
 const labels = {
@@ -174,7 +164,6 @@ updateCharacterCount();
 initializeCapture({
   onInvalidate() {
     resetMap();
-    plotCaptureMapButton.disabled = true;
     results.hidden = true;
     resultList.replaceChildren();
     resultCount.textContent = "";
@@ -190,6 +179,5 @@ initializeCapture({
       new Date(location.capturedAt).toLocaleString("pt-BR"),
       "Não comprova a posição do veículo.",
     ].join(" · "));
-    plotCaptureMapButton.disabled = false;
   },
 });
