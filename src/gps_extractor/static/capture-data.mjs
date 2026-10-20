@@ -1,3 +1,5 @@
+export const MAX_CAPTURE_ACCURACY_METERS = 500;
+
 export function normalizePlate(text) {
   const plate = text.trim().toUpperCase().replace(/[-\s]/g, "");
   return /^(?:[A-Z]{3}\d{4}|[A-Z]{3}\d[A-Z]\d{2})$/.test(plate) ? plate : null;
@@ -68,11 +70,20 @@ export function validateCapturePosition(position, capturedAt) {
 }
 
 export function waitForCapturePosition(geolocation, {
-  signal, onWaiting = () => {}, timeoutMs = 25000, now = Date.now,
+  signal,
+  onWaiting = () => {},
+  timeoutMs = 25000,
+  now = Date.now,
+  accuracyLimitMeters = MAX_CAPTURE_ACCURACY_METERS,
 } = {}) {
   return new Promise((resolve, reject) => {
+    if (!Number.isFinite(accuracyLimitMeters) || accuracyLimitMeters < 0) {
+      reject(new Error("O limite de precisão do GPS é inválido."));
+      return;
+    }
     let watchId;
     let settled = false;
+    let sawInaccuratePosition = false;
     const finish = (error, position) => {
       if (settled) return;
       settled = true;
@@ -83,8 +94,9 @@ export function waitForCapturePosition(geolocation, {
       else resolve(position);
     };
     const abort = () => finish(new Error("Solicitação de GPS cancelada."));
-    const timer = setTimeout(() => finish(new Error(
-      "Não foi possível obter um GPS recente. Ative a localização precisa e tente em um local aberto.",
+    const timer = setTimeout(() => finish(new Error(sawInaccuratePosition
+      ? `A precisão do GPS permaneceu acima de ±${accuracyLimitMeters} m. Ative a localização precisa do aparelho e tente em um local aberto.`
+      : "Não foi possível obter um GPS recente. Ative a localização precisa e tente em um local aberto.",
     )), timeoutMs);
     if (signal?.aborted) {
       abort();
@@ -97,11 +109,16 @@ export function waitForCapturePosition(geolocation, {
         const receivedAt = now();
         if (Number.isFinite(position.timestamp) &&
             Math.abs(receivedAt - position.timestamp) > 15000) {
-          onWaiting();
+          onWaiting({ reason: "stale", position });
           return;
         }
         try {
           validateCapturePosition(position, receivedAt);
+          if (position.coords.accuracy > accuracyLimitMeters) {
+            sawInaccuratePosition = true;
+            onWaiting({ reason: "accuracy", position });
+            return;
+          }
           finish(null, position);
         } catch (error) {
           finish(error);
@@ -110,7 +127,7 @@ export function waitForCapturePosition(geolocation, {
         if (error.code === 1) {
           finish(new Error("Permissão de localização negada. Libere o acesso nas configurações do navegador."));
         } else {
-          onWaiting();
+          onWaiting({ reason: "unavailable" });
         }
       }, { enableHighAccuracy: true, maximumAge: 0, timeout: timeoutMs });
       if (settled) geolocation.clearWatch(watchId);

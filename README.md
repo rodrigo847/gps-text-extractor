@@ -132,12 +132,16 @@ Na secao **Capturar foto**, siga este fluxo:
    digital e nao garante novos detalhes nem leitura a distancia.
 4. Toque em **Tirar foto**. A imagem e congelada imediatamente e a camera e
    desligada. O app solicita uma localizacao recente; se o GPS estiver procurando,
-   a foto ja aparece enquanto o app aguarda por ate 25 segundos. Posicoes com
-   mais de 15 segundos de diferenca da captura sao recusadas.
+   a foto ja aparece enquanto o app aguarda por ate 25 segundos. Para usar o
+   mapa ou preparar o e-mail, a precisao estimada precisa ser de ate ±500 m;
+   leituras mais imprecisas sao aguardadas, mas recusadas se nao melhorarem.
+   Posicoes com mais de 15 segundos de diferenca da captura tambem sao recusadas.
 5. O OCR esta desativado neste momento. Quando as coordenadas estiverem prontas,
-   **Baixar foto** salva a imagem no aparelho e **Preparar e-mail** abre o app de
-   e-mail com latitude, longitude, precisao e horario preenchidos para
-   `planejamarketing@gmail.com` e `rtechdigitais@gmail.com`.
+   o ponto e exibido na secao de mapa. Toque em **Carregar mapa online** para
+   plotar a localizacao. **Baixar foto** salva a imagem no aparelho e
+   **Preparar e-mail** abre o app de e-mail com latitude, longitude, precisao
+   e horario preenchidos para `planejamarketing@gmail.com` e
+   `rtechdigitais@gmail.com`.
 6. Anexe manualmente ao rascunho o arquivo baixado e envie. O navegador nao
    consegue anexar ou enviar a foto automaticamente sem um backend/provedor
    configurado; o envio so acontece depois da confirmacao no app de e-mail.

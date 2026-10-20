@@ -29,12 +29,15 @@ class ServerTests(unittest.TestCase):
             self.assertIn(b"lang=\"pt-BR\"", content)
             self.assertIn(b'id="download-photo"', content)
             self.assertIn(b'id="email-photo"', content)
+            self.assertIn(b'id="map-section"', content)
+            self.assertIn(b'id="load-map"', content)
+            self.assertIn(b'precis\xc3\xa3o estimada for de at\xc3\xa9 \xc2\xb1500 m', content)
             self.assertIn(b'OCR est\xc3\xa1 desativado', content)
 
     def test_camera_modules_are_served_as_javascript(self):
         for filename in ("capture.mjs", "capture-data.mjs"):
             with self.subTest(filename=filename):
-                with urlopen(f"{self.base_url}/{filename}?v=20261020-photo-email") as response:
+                with urlopen(f"{self.base_url}/{filename}?v=20261020-gps-accuracy") as response:
                     self.assertEqual(response.status, 200)
                     self.assertIn("javascript", response.headers["Content-Type"])
                     self.assertGreater(len(response.read()), 0)
