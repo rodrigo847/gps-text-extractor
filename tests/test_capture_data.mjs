@@ -6,6 +6,8 @@ import {
   validateCapturePosition,
   waitForCapturePosition,
   calculateCaptureCrop,
+  calculateOcrEnhancement,
+  withTimeout,
 } from "../src/gps_extractor/static/capture-data.mjs";
 
 test("normalizes reviewed plates without guessing ambiguous characters", () => {
@@ -37,6 +39,23 @@ test("capture crop matches the visible guide for landscape and portrait cameras"
 
 test("capture crop rejects unavailable preview dimensions", () => {
   assert.throws(() => calculateCaptureCrop(1920, 1080, 0, 0), /Dimensões/);
+});
+
+test("increases brightness only for dim OCR images", () => {
+  assert.deepEqual(calculateOcrEnhancement(40), { brightness: 1.8, contrast: 1.15 });
+  assert.deepEqual(calculateOcrEnhancement(100), { brightness: 1.4, contrast: 1.1 });
+  assert.deepEqual(calculateOcrEnhancement(180), { brightness: 1, contrast: 1 });
+  for (const luminance of [-1, 256, NaN]) {
+    assert.throws(() => calculateOcrEnhancement(luminance), /luminosidade/);
+  }
+});
+
+test("OCR timeout resolves completed work and rejects stalled work", async () => {
+  assert.equal(await withTimeout(Promise.resolve("ok"), 20, "timeout"), "ok");
+  await assert.rejects(
+    withTimeout(new Promise(() => {}), 10, "OCR demorou"),
+    /OCR demorou/,
+  );
 });
 
 test("waits for a fresh GPS update after a cached position and clears the watch", async () => {

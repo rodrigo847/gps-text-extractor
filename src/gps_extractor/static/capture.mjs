@@ -1,4 +1,14 @@
-import { calculateCaptureCrop, extractPlateCandidates, validateCapturePosition, normalizePlate, waitForCapturePosition } from "./capture-data.mjs";
+import {
+  calculateCaptureCrop,
+  calculateOcrEnhancement,
+  extractPlateCandidates,
+  normalizePlate,
+  validateCapturePosition,
+  waitForCapturePosition,
+  withTimeout,
+} from "./capture-data.mjs";
+
+const OCR_STEP_TIMEOUT_MS = 60000;
 
 export function initializeCapture({ onInvalidate, onConfirm }) {
   const video = document.querySelector("#camera-preview");
@@ -9,6 +19,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
   const cameraFeed = document.querySelector(".camera-feed");
   const captureLabel = document.querySelector("#capture-label");
   const stopButton = document.querySelector("#stop-camera");
+  const torchButton = document.querySelector("#camera-torch");
   const clearButton = document.querySelector("#clear-photo");
   const status = document.querySelector("#capture-status");
   const review = document.querySelector("#photo-review");
@@ -27,6 +38,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
   let active = true;
   let operationId = 0;
   let locationRequest = null;
+  let torchEnabled = false;
 
   function isCurrent(operation) {
     return active && operation === operationId;
@@ -44,15 +56,50 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     document.querySelector("#camera-view").hidden = true;
     captureButton.hidden = true;
     stopButton.hidden = true;
+    torchButton.hidden = true;
+    torchButton.textContent = "Ativar lanterna";
+    torchButton.setAttribute("aria-pressed", "false");
+    torchEnabled = false;
     startButton.hidden = false;
     zoomControl.hidden = true;
   }
+
+  torchButton.addEventListener("click", async () => {
+    if (busy || !stream) return;
+    const track = stream.getVideoTracks()[0];
+    const operation = operationId;
+    const nextEnabled = !torchEnabled;
+    busy = true;
+    torchButton.disabled = true;
+    captureButton.disabled = true;
+    zoomInput.disabled = true;
+    try {
+      await track.applyConstraints({ advanced: [{ torch: nextEnabled }] });
+      if (!isCurrent(operation) || stream?.getVideoTracks()[0] !== track) return;
+      torchEnabled = nextEnabled;
+      torchButton.textContent = torchEnabled ? "Desativar lanterna" : "Ativar lanterna";
+      torchButton.setAttribute("aria-pressed", String(torchEnabled));
+      notify(torchEnabled ? "Lanterna ativada." : "Lanterna desativada.");
+    } catch (error) {
+      if (isCurrent(operation)) {
+        notify(`O aparelho não conseguiu ajustar a lanterna: ${error.message}.`, true);
+      }
+    } finally {
+      if (isCurrent(operation)) {
+        busy = false;
+        torchButton.disabled = false;
+        captureButton.disabled = false;
+        zoomInput.disabled = false;
+      }
+    }
+  });
 
   zoomInput.addEventListener("change", async () => {
     if (busy || !stream) return;
     const track = stream.getVideoTracks()[0];
     const operation = operationId;
     busy = true;
+    torchButton.disabled = true;
     zoomInput.disabled = true;
     captureButton.disabled = true;
     try {
@@ -70,6 +117,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     } finally {
       if (isCurrent(operation)) {
         busy = false;
+        torchButton.disabled = false;
         zoomInput.disabled = false;
         captureButton.disabled = false;
       }
@@ -120,9 +168,11 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
       if (!isCurrent(operation)) return;
       const track = stream.getVideoTracks()[0];
       const zoom = track.getCapabilities?.().zoom;
+      const supportsTorch = track.getCapabilities?.().torch === true;
       const supportsZoom = Number.isFinite(zoom?.min) && Number.isFinite(zoom?.max) &&
         zoom.max > zoom.min;
       zoomControl.hidden = !supportsZoom;
+      torchButton.hidden = !supportsTorch;
       zoomHelp.textContent = supportsZoom
         ? "Zoom do aparelho: ajuste sem sair de um local seguro. Pode ser digital."
         : "Zoom não disponível neste navegador. Se a placa não estiver legível, não se aproxime.";
@@ -168,6 +218,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     busy = true;
     const operation = ++operationId;
     captureButton.disabled = true;
+    torchButton.disabled = true;
     zoomInput.disabled = true;
     captureLabel.textContent = "Obtendo GPS…";
     cameraView.setAttribute("aria-busy", "true");
@@ -201,6 +252,23 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
       if (!context) throw new Error("O navegador não conseguiu preparar a foto.");
       context.drawImage(video,
         crop.x, crop.y, crop.width, crop.height, 0, 0, canvas.width, canvas.height);
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      let luminance = 0;
+      let samples = 0;
+      for (let index = 0; index < pixels.length; index += 64) {
+        luminance += 0.2126 * pixels[index] + 0.7152 * pixels[index + 1] +
+          0.0722 * pixels[index + 2];
+        samples += 1;
+      }
+      const enhancement = calculateOcrEnhancement(luminance / samples);
+      const ocrCanvas = document.createElement("canvas");
+      ocrCanvas.width = canvas.width;
+      ocrCanvas.height = canvas.height;
+      const ocrContext = ocrCanvas.getContext("2d");
+      if (!ocrContext) throw new Error("O navegador não conseguiu preparar a leitura da foto.");
+      ocrContext.filter =
+        `brightness(${enhancement.brightness}) contrast(${enhancement.contrast})`;
+      ocrContext.drawImage(canvas, 0, 0);
       record = { ...location, capturedAt };
       stopCamera();
       startButton.disabled = true;
@@ -213,23 +281,54 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
         `Precisão estimada: ±${Math.round(location.accuracy)} m. ` +
         `Captura: ${new Date(capturedAt).toLocaleString("pt-BR")}.`;
       notify("Carregando o motor OCR no aparelho. O primeiro uso pode levar alguns instantes...");
-      const { default: Tesseract } = await import(
-        "https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.esm.min.js"
+      const { default: Tesseract } = await withTimeout(
+        import("https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.esm.min.js"),
+        OCR_STEP_TIMEOUT_MS,
+        "O download do OCR demorou mais de 60 segundos. Confira a conexão e tente novamente; você pode digitar a placa manualmente.",
       );
       if (!isCurrent(operation)) return;
-      worker = await Tesseract.createWorker("eng", 1, {
+      const workerCreation = Tesseract.createWorker("eng", 1, {
         logger: (progress) => {
-          if (progress.status === "recognizing text" && isCurrent(operation)) {
+          if (!isCurrent(operation)) return;
+          if (progress.status === "recognizing text") {
             notify(`Lendo a placa: ${Math.round(progress.progress * 100)}%...`);
+          } else if (progress.status) {
+            notify(`Preparando OCR: ${progress.status}...`);
           }
         },
       });
+      const workerTimeoutMessage =
+        "A preparação do OCR demorou mais de 60 segundos. Confira a conexão e tente novamente; você pode digitar a placa manualmente.";
+      try {
+        worker = await withTimeout(workerCreation, OCR_STEP_TIMEOUT_MS, workerTimeoutMessage);
+      } catch (error) {
+        if (error.message === workerTimeoutMessage) {
+          void workerCreation.then(async (lateWorker) => {
+            try {
+              await lateWorker.terminate();
+            } catch (terminationError) {
+              if (isCurrent(operation)) {
+                notify(`Erro ao encerrar o OCR: ${terminationError.message}. Recarregue a página antes de continuar.`, true);
+              }
+            }
+          }, (creationError) => {
+            if (isCurrent(operation)) {
+              notify(`Falha ao preparar o OCR: ${creationError.message}. Digite a placa manualmente.`, true);
+            }
+          });
+        }
+        throw error;
+      }
       if (!isCurrent(operation)) return;
-      await worker.setParameters({
+      await withTimeout(worker.setParameters({
         tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789- ",
         tessedit_pageseg_mode: "7",
-      });
-      const result = await worker.recognize(canvas);
+      }), OCR_STEP_TIMEOUT_MS, "O OCR não respondeu ao preparar a leitura em 60 segundos. Você pode digitar a placa manualmente.");
+      const result = await withTimeout(
+        worker.recognize(ocrCanvas),
+        OCR_STEP_TIMEOUT_MS,
+        "A leitura do OCR demorou mais de 60 segundos. Confira a foto e digite a placa manualmente.",
+      );
       if (!isCurrent(operation)) return;
       rawText.value = result.data.text;
       const candidates = extractPlateCandidates(result.data.text);
@@ -258,6 +357,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
         locationRequest = null;
         busy = false;
         captureButton.disabled = false;
+        torchButton.disabled = false;
         zoomInput.disabled = false;
         captureLabel.textContent = "Tirar foto";
         cameraView.removeAttribute("aria-busy");
@@ -300,7 +400,9 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     busy = false;
     captureLabel.textContent = "Tirar foto";
     cameraView.removeAttribute("aria-busy");
-    for (const button of [startButton, captureButton, stopButton, clearButton, zoomInput]) {
+    for (const button of [
+      startButton, captureButton, stopButton, torchButton, clearButton, zoomInput,
+    ]) {
       button.disabled = false;
     }
   });

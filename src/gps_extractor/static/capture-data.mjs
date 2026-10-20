@@ -26,6 +26,25 @@ export function extractPlateCandidates(text) {
   return [...new Set(matches.map(normalizePlate).filter(Boolean))];
 }
 
+export function calculateOcrEnhancement(meanLuminance) {
+  if (!Number.isFinite(meanLuminance) || meanLuminance < 0 || meanLuminance > 255) {
+    throw new Error("A luminosidade da foto é inválida.");
+  }
+  if (meanLuminance < 80) return { brightness: 1.8, contrast: 1.15 };
+  if (meanLuminance < 120) return { brightness: 1.4, contrast: 1.1 };
+  return { brightness: 1, contrast: 1 };
+}
+
+export function withTimeout(promise, timeoutMs, message) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error(message)), timeoutMs);
+    }),
+  ]).finally(() => clearTimeout(timer));
+}
+
 export function validateCapturePosition(position, capturedAt) {
   const { latitude, longitude, accuracy } = position.coords;
   if (![latitude, longitude, accuracy, position.timestamp, capturedAt].every(Number.isFinite) ||

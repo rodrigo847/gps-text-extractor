@@ -126,6 +126,9 @@ Na nova secao **Ler placa pela camera**, siga este fluxo:
    apenas se ja estiver legivel sem se aproximar. Nunca siga veiculos,
    confronte pessoas ou utilize a camera enquanto dirige.
    A previa e uma janela compacta horizontal, sem abrir em tela cheia.
+   Se o navegador informar suporte a lanterna, o botao **Ativar lanterna**
+   aparecera junto aos controles. Use-o apenas quando for seguro; alguns
+   aparelhos e navegadores nao disponibilizam esse recurso.
    Se a camera disponibilizar zoom ao navegador, um controle aparece no painel;
    caso contrario, o app informa que ele nao esta disponivel. O zoom pode ser
    digital e nao garante novos detalhes nem leitura a distancia.
@@ -137,7 +140,11 @@ Na nova secao **Ler placa pela camera**, siga este fluxo:
    por ate 25 segundos, sem usar o ponto antigo. A observacao e encerrada ao
    obter uma posicao recente, negar permissao, sair da pagina ou atingir o prazo.
    Posicoes com mais de 15 segundos de diferenca da captura continuam recusadas.
-5. O recorte da placa e processado por Tesseract.js 6.0.1 no navegador.
+5. O recorte da placa e processado por Tesseract.js 6.0.1 no navegador. Fotos
+   escuras recebem ajuste de brilho e contraste somente para a leitura; a foto
+   original exibida para revisao nao e alterada. A preparacao e a leitura tem
+   limite de 60 segundos cada; se o OCR nao responder, confira a conexao e
+   digite a placa manualmente.
    O app solicita video de ate 3840 x 2160 como preferencia, nao como garantia:
    a resolucao efetiva depende do aparelho/navegador. O recorte acompanha a faixa
    visivel, inclusive com camera em retrato, e preserva ate 2400 pixels de largura.
