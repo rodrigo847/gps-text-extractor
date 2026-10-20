@@ -7,7 +7,7 @@
     <title>Sinaliza | Registro responsável de possíveis avistamentos</title>
     <meta name="description" content="Protótipo para capturar uma foto e compartilhar coordenadas do aparelho por e-mail.">
     <link rel="stylesheet" href="./styles.css?v=20261020-photo-email">
-    <script type="module" src="./app.js?v=20261020-gps-accuracy"></script>
+    <script type="module" src="./app.js?v=20261020-capture-map-button"></script>
   </head>
   <body>
     <main class="app-shell">
@@ -64,6 +64,8 @@
             <canvas id="photo-preview" role="img" aria-label="Foto capturada para revisão"></canvas>
             <p id="photo-location" class="map-copy"></p>
             <p class="map-copy">O OCR está desativado para estes testes. A localização só será usada se a precisão estimada for de até ±500 m. O e-mail será endereçado para planejamarketing@gmail.com e rtechdigitais@gmail.com. Baixe a foto e anexe-a manualmente.</p>
+            <button id="plot-capture-map" class="primary-button capture-map-button"
+              type="button" aria-controls="map-section" disabled>Plotar localização no mapa</button>
             <div class="button-group photo-actions">
               <button id="download-photo" class="secondary-button" type="button" disabled>Baixar foto</button>
               <button id="email-photo" class="primary-button" type="button" disabled>Preparar e-mail</button>

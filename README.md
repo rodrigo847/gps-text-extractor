@@ -137,8 +137,9 @@ Na secao **Capturar foto**, siga este fluxo:
    leituras mais imprecisas sao aguardadas, mas recusadas se nao melhorarem.
    Posicoes com mais de 15 segundos de diferenca da captura tambem sao recusadas.
 5. O OCR esta desativado neste momento. Quando as coordenadas estiverem prontas,
-   o ponto e exibido na secao de mapa. Toque em **Carregar mapa online** para
-   plotar a localizacao. **Baixar foto** salva a imagem no aparelho e
+   habilita o botao **Plotar localizacao no mapa** que aparece junto da foto.
+   Toque nele para abrir o mapa e ir diretamente ate o ponto. **Baixar foto**
+   salva a imagem no aparelho e
    **Preparar e-mail** abre o app de e-mail com latitude, longitude, precisao
    e horario preenchidos para `planejamarketing@gmail.com` e
    `rtechdigitais@gmail.com`.
