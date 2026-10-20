@@ -1,5 +1,5 @@
 import { createMapLocation, extractFields } from "./parser.mjs";
-import { initializeCapture } from "./capture.mjs?v=20261020-photo-email";
+import { initializeCapture } from "./capture.mjs";
 
 const form = document.querySelector("#extract-form");
 const textInput = document.querySelector("#source-text");
@@ -169,5 +169,8 @@ initializeCapture({
     resultCount.textContent = "";
     statusMessage.textContent = "Protótipo independente. Não envia denúncias às autoridades.";
     statusMessage.classList.remove("error");
+  },
+  onConfirm(fields, sourceMessage) {
+    renderFields(fields, "Foto e localização revisadas pelo usuário.", sourceMessage);
   },
 });

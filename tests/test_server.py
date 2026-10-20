@@ -25,22 +25,18 @@ class ServerTests(unittest.TestCase):
     def test_home_page_is_served(self):
         with urlopen(self.base_url) as response:
             self.assertEqual(response.status, 200)
-            content = response.read()
-            self.assertIn(b"lang=\"pt-BR\"", content)
-            self.assertIn(b'id="download-photo"', content)
-            self.assertIn(b'id="email-photo"', content)
-            self.assertIn(b'OCR est\xc3\xa1 desativado', content)
+            self.assertIn(b"lang=\"pt-BR\"", response.read())
 
     def test_camera_modules_are_served_as_javascript(self):
         for filename in ("capture.mjs", "capture-data.mjs"):
             with self.subTest(filename=filename):
-                with urlopen(f"{self.base_url}/{filename}?v=20261020-photo-email") as response:
+                with urlopen(f"{self.base_url}/{filename}") as response:
                     self.assertEqual(response.status, 200)
                     self.assertIn("javascript", response.headers["Content-Type"])
                     self.assertGreater(len(response.read()), 0)
 
     def test_versioned_stylesheet_is_served(self):
-        with urlopen(f"{self.base_url}/styles.css?v=20261020-photo-email") as response:
+        with urlopen(f"{self.base_url}/styles.css?v=20261018-camera-compact") as response:
             self.assertEqual(response.status, 200)
             self.assertIn("text/css", response.headers["Content-Type"])
             self.assertIn(b".camera-launch", response.read())

@@ -21,35 +21,6 @@ export function calculateCaptureCrop(sourceWidth, sourceHeight, previewWidth, pr
   };
 }
 
-export function calculatePhotoSize(sourceWidth, sourceHeight, maxDimension = 2400) {
-  if (![sourceWidth, sourceHeight, maxDimension]
-    .every((value) => Number.isFinite(value) && value > 0)) {
-    throw new Error("Dimensões da câmera indisponíveis. Abra a câmera novamente.");
-  }
-  const scale = Math.min(1, maxDimension / Math.max(sourceWidth, sourceHeight));
-  return {
-    width: Math.max(1, Math.round(sourceWidth * scale)),
-    height: Math.max(1, Math.round(sourceHeight * scale)),
-  };
-}
-
-export function buildPhotoEmailUrl({ latitude, longitude, accuracy, capturedAt }) {
-  if (![latitude, longitude, accuracy, capturedAt].every(Number.isFinite)) {
-    throw new Error("Coordenadas ou horário da captura indisponíveis.");
-  }
-  const subject = encodeURIComponent("Foto de teste de campo");
-  const body = encodeURIComponent([
-    "Foto de teste de campo.",
-    `Latitude: ${latitude}`,
-    `Longitude: ${longitude}`,
-    `Precisão estimada: ±${Math.round(accuracy)} m`,
-    `Captura: ${new Date(capturedAt).toLocaleString("pt-BR")}`,
-    "",
-    "Anexe manualmente o arquivo da foto baixada no aparelho.",
-  ].join("\n"));
-  return `mailto:planejamarketing@gmail.com,rtechdigitais@gmail.com?subject=${subject}&body=${body}`;
-}
-
 export function extractPlateCandidates(text) {
   const matches = text.toUpperCase().match(/\b[A-Z]{3}[ -]?(?:\d{4}|\d[A-Z]\d{2})\b/g) ?? [];
   return [...new Set(matches.map(normalizePlate).filter(Boolean))];

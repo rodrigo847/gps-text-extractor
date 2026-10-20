@@ -552,13 +552,46 @@ h2 {
   border-radius: 10px;
 }
 
-.photo-actions {
-  justify-content: stretch;
-  margin: 14px 0;
+.camera-guide {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  width: 90%;
+  aspect-ratio: 3.2;
+  transform: translateY(-50%);
+  border: 3px solid #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px var(--green);
+  pointer-events: none;
 }
 
-.photo-actions button {
-  flex: 1;
+#confirm-photo {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+#photo-plate {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  text-transform: uppercase;
+}
+
+.capture-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.6;
+}
+
+.capture-consent input {
+  flex-shrink: 0;
+  margin-top: 4px;
 }
 
 #capture-status.error {
