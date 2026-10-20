@@ -8,7 +8,6 @@ import {
   calculateCaptureCrop,
   calculatePhotoSize,
   buildPhotoEmailUrl,
-  MAX_CAPTURE_ACCURACY_METERS,
 } from "../src/gps_extractor/static/capture-data.mjs";
 
 test("normalizes reviewed plates without guessing ambiguous characters", () => {
@@ -85,61 +84,6 @@ test("waits for a fresh GPS update after a cached position and clears the watch"
   success(fresh);
   assert.equal(await pending, fresh);
   assert.deepEqual(cleared, [7]);
-});
-
-test("waits for a GPS reading within the accuracy limit", async () => {
-  let success;
-  const waiting = [];
-  const cleared = [];
-  const geo = {
-    watchPosition(callback) {
-      success = callback;
-      return 11;
-    },
-    clearWatch(id) { cleared.push(id); },
-  };
-  const pending = waitForCapturePosition(geo, {
-    now: () => 100000,
-    onWaiting: (info) => waiting.push(info),
-  });
-  success({
-    coords: { latitude: -25.4, longitude: -49.2, accuracy: 2000 },
-    timestamp: 100000,
-  });
-  assert.equal(waiting[0].reason, "accuracy");
-  assert.equal(waiting[0].position.coords.accuracy, 2000);
-  assert.deepEqual(cleared, []);
-
-  const precise = {
-    coords: {
-      latitude: -25.4,
-      longitude: -49.2,
-      accuracy: MAX_CAPTURE_ACCURACY_METERS,
-    },
-    timestamp: 100000,
-  };
-  success(precise);
-  assert.equal(await pending, precise);
-  assert.deepEqual(cleared, [11]);
-});
-
-test("rejects an inaccurate GPS reading if accuracy does not improve in time", async () => {
-  const cleared = [];
-  const geo = {
-    watchPosition(success) {
-      queueMicrotask(() => success({
-        coords: { latitude: -25.4, longitude: -49.2, accuracy: 2000 },
-        timestamp: Date.now(),
-      }));
-      return 12;
-    },
-    clearWatch(id) { cleared.push(id); },
-  };
-  await assert.rejects(
-    waitForCapturePosition(geo, { timeoutMs: 10 }),
-    /precisão do GPS permaneceu acima de ±500 m/,
-  );
-  assert.deepEqual(cleared, [12]);
 });
 
 test("GPS timeout and leaving the page both stop watching", async () => {

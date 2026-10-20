@@ -1,12 +1,11 @@
 import {
   buildPhotoEmailUrl,
   calculatePhotoSize,
-  MAX_CAPTURE_ACCURACY_METERS,
   validateCapturePosition,
   waitForCapturePosition,
-} from "./capture-data.mjs?v=20261020-gps-accuracy";
+} from "./capture-data.mjs?v=20261020-photo-email";
 
-export function initializeCapture({ onInvalidate, onLocation }) {
+export function initializeCapture({ onInvalidate }) {
   const video = document.querySelector("#camera-preview");
   const canvas = document.querySelector("#photo-preview");
   const startButton = document.querySelector("#start-camera");
@@ -214,15 +213,9 @@ export function initializeCapture({ onInvalidate, onLocation }) {
       try {
         const position = await waitForCapturePosition(navigator.geolocation, {
           signal: locationRequest.signal,
-          onWaiting({ reason, position } = {}) {
+          onWaiting() {
             if (isCurrent(operation)) {
-              if (reason === "accuracy" && position) {
-                notify(
-                  `A foto já foi capturada. GPS com precisão estimada de ±${Math.round(position.coords.accuracy)} m; aguardando uma leitura de até ±${MAX_CAPTURE_ACCURACY_METERS} m.`,
-                );
-              } else {
-                notify("A foto já foi capturada. Atualizando o GPS; isso pode levar até 25 segundos.");
-              }
+              notify("A foto já foi capturada. Atualizando o GPS; isso pode levar até 25 segundos.");
             }
           },
         });
@@ -234,7 +227,6 @@ export function initializeCapture({ onInvalidate, onLocation }) {
           `Precisão estimada: ±${Math.round(location.accuracy)} m. ` +
           `Captura: ${new Date(capturedAt).toLocaleString("pt-BR")}.`;
         emailButton.disabled = false;
-        onLocation?.({ ...location, capturedAt });
         notify("Foto e localização prontas. Baixe a foto e prepare o e-mail.");
       } catch (error) {
         if (!isCurrent(operation)) return;

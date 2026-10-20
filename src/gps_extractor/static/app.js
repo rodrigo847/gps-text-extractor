@@ -1,5 +1,5 @@
 import { createMapLocation, extractFields } from "./parser.mjs";
-import { initializeCapture } from "./capture.mjs?v=20261020-gps-accuracy";
+import { initializeCapture } from "./capture.mjs?v=20261020-photo-email";
 
 const form = document.querySelector("#extract-form");
 const textInput = document.querySelector("#source-text");
@@ -169,15 +169,5 @@ initializeCapture({
     resultCount.textContent = "";
     statusMessage.textContent = "Protótipo independente. Não envia denúncias às autoridades.";
     statusMessage.classList.remove("error");
-  },
-  onLocation(location) {
-    renderFields({
-      latitude: String(location.latitude),
-      longitude: String(location.longitude),
-    }, "Localização da captura pronta. Use Carregar mapa online para visualizar o ponto.", [
-      `GPS do aparelho, precisão estimada ±${Math.round(location.accuracy)} m`,
-      new Date(location.capturedAt).toLocaleString("pt-BR"),
-      "Não comprova a posição do veículo.",
-    ].join(" · "));
   },
 });
