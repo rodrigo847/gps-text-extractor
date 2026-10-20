@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f4f7f5">
     <title>Sinaliza | Registro responsável de possíveis avistamentos</title>
-    <meta name="description" content="Protótipo para organizar relatos, revisar placas por OCR e visualizar coordenadas. Sem envio às autoridades ou consulta a cadastros de veículos.">
-    <link rel="stylesheet" href="./styles.css?v=20261018-camera-compact">
-    <script type="module" src="./app.js"></script>
+    <meta name="description" content="Protótipo para capturar uma foto e compartilhar coordenadas do aparelho por e-mail.">
+    <link rel="stylesheet" href="./styles.css?v=20261020-photo-email">
+    <script type="module" src="./app.js?v=20261020-photo-email"></script>
   </head>
   <body>
     <main class="app-shell">
@@ -31,19 +31,18 @@
 
       <section class="workspace" aria-label="Extrator de informações">
         <section class="results-card capture-card" aria-labelledby="capture-heading">
-          <h2 id="capture-heading">Ler uma placa</h2>
-          <p class="map-copy">Foto e GPS com sua permissão. Revise a leitura antes de confirmar.</p>
+          <h2 id="capture-heading">Capturar foto</h2>
+          <p class="map-copy">Tire a foto e obtenha a localização do aparelho para preparar um e-mail.</p>
           <button id="start-camera" class="camera-launch" type="button">
             <span class="camera-launch-art">
               <img src="./camera.png" width="72" height="72" alt="">
             </span>
             <span class="camera-launch-title">Abrir câmera</span>
-            <span class="camera-launch-hint">Toque para fotografar a placa</span>
+            <span class="camera-launch-hint">Toque para tirar uma foto</span>
           </button>
           <div id="camera-view" hidden>
             <div class="camera-feed">
               <video id="camera-preview" autoplay muted playsinline></video>
-              <div class="camera-guide" aria-hidden="true"></div>
             </div>
             <div id="camera-zoom" hidden>
               <label for="zoom-level">Zoom <output id="zoom-value" for="zoom-level">1.0×</output></label>
@@ -51,33 +50,24 @@
             </div>
             <div class="camera-controls">
               <button id="capture-photo" class="camera-shutter" type="button"
-                aria-label="Capturar foto com GPS e ler placa" aria-describedby="camera-capture-hint" hidden>
+                aria-label="Tirar foto e obter localização" aria-describedby="camera-capture-hint" hidden>
                 <span class="shutter-icon" aria-hidden="true"></span>
                 <span id="capture-label">Tirar foto</span>
               </button>
               <button id="stop-camera" class="secondary-button" type="button" hidden>Desligar câmera</button>
             </div>
-            <p id="camera-capture-hint">Mantenha a placa enquadrada durante a captura.</p>
+            <p id="camera-capture-hint">Mantenha o assunto enquadrado durante a captura.</p>
             <p id="zoom-help"></p>
           </div>
           <p id="capture-status" class="map-copy" role="status"></p>
           <section id="photo-review" hidden aria-label="Revisão da captura">
-            <canvas id="photo-preview" role="img" aria-label="Foto recortada da placa para revisão"></canvas>
+            <canvas id="photo-preview" role="img" aria-label="Foto capturada para revisão"></canvas>
             <p id="photo-location" class="map-copy"></p>
-            <details>
-              <summary>Ver texto bruto do OCR</summary>
-              <textarea id="ocr-text" rows="2" readonly aria-label="Texto bruto reconhecido pelo OCR"></textarea>
-            </details>
-            <form id="confirm-photo">
-              <label for="photo-plate">Placa (revise e corrija se necessário)</label>
-              <input id="photo-plate" name="plate" maxlength="10" autocomplete="off"
-                autocapitalize="characters" spellcheck="false" placeholder="ABC1D23" required>
-              <label class="capture-consent">
-                <input id="confirm-location" type="checkbox" required>
-                Revisei a placa e a precisão. O ponto é do aparelho, não comprova a posição do veículo.
-              </label>
-              <button class="primary-button" type="submit" disabled>Confirmar dados para o mapa</button>
-            </form>
+            <p class="map-copy">O OCR está desativado para estes testes. O e-mail será endereçado para planejamarketing@gmail.com e rtechdigitais@gmail.com. Baixe a foto e anexe-a manualmente.</p>
+            <div class="button-group photo-actions">
+              <button id="download-photo" class="secondary-button" type="button" disabled>Baixar foto</button>
+              <button id="email-photo" class="primary-button" type="button" disabled>Preparar e-mail</button>
+            </div>
             <button id="clear-photo" class="secondary-button" type="button">Descartar foto e dados</button>
           </section>
         </section>
@@ -113,8 +103,8 @@
           <details class="app-details">
             <summary>Privacidade e uso seguro</summary>
             <p class="map-copy">
-              Foto e OCR ficam neste navegador, sem upload. O motor OCR é baixado de
-              provedores externos, que recebem seu IP, não a foto. A leitura pode errar.
+              A foto e a localização ficam neste navegador até você abrir o e-mail.
+              O navegador não anexa a foto automaticamente; baixe-a e anexe manualmente.
             </p>
             <p class="map-copy">
               Teste com uma placa fictícia ou captura autorizada. Não se aproxime para

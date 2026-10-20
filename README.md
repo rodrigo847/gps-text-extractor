@@ -2,8 +2,9 @@
 
 **Um registro pode ajudar. Sua seguranca vem primeiro.**
 
-Prototipo para organizar relatos de possiveis avistamentos de veiculos:
-extrair campos de texto, revisar placas por OCR e visualizar coordenadas.
+Prototipo para capturar fotos de teste e organizar relatos de possiveis
+avistamentos de veiculos. A leitura OCR pela camera esta temporariamente
+desativada durante os testes de campo.
 A proposta social e apoiar, no futuro, a triagem de informacoes por autoridades,
 sem incentivar abordagens, perseguicoes ou exposicao publica de pessoas.
 O escopo ainda precisa ser validado com o autor do projeto e potenciais parceiros.
@@ -35,7 +36,8 @@ https://rodrigo847.github.io/gps-text-extractor/
 O [arquivo original](docs/fluxograma-projeto.svg) tambem esta no repositorio.
 O diagrama separa a demonstracao online, a integracao HTTP local e a futura
 integracao com um GPS externo pela internet, alem do novo fluxo de camera com
-GPS e OCR no navegador. Pode ser aberto no navegador ou
+GPS no navegador (OCR pela camera temporariamente desativado). Pode ser aberto
+no navegador ou
 inserido em uma apresentacao como imagem vetorial.
 
 ## Pesquisas para evolucao
@@ -103,7 +105,7 @@ Para validar a parte do navegador (Node.js instalado), execute:
 node --test tests/test_static_parser.mjs
 ```
 
-## Capturar foto da placa com GPS e OCR
+## Capturar foto e preparar e-mail
 
 Na interface simplificada, a camera e a acao principal. O cartao **Abrir camera**
 usa a imagem de camera fornecida para o projeto; toda a area e um botao,
@@ -117,57 +119,35 @@ comecam fechados. O envio HTTP fica em
 **Teste tecnico da API local**. Os avisos essenciais e a revisao da captura
 continuam visiveis no momento de uso.
 
-Na nova secao **Ler placa pela camera**, siga este fluxo:
+Na secao **Capturar foto**, siga este fluxo:
 
 1. Abra a pagina em um celular por HTTPS (ou use localhost no computador).
 2. Clique em **Abrir camera** e permita o acesso. A camera traseira e preferida,
    mas o navegador pode oferecer outra camera.
-3. Use uma placa ficticia ou captura autorizada. Enquadre a placa na faixa
-   apenas se ja estiver legivel sem se aproximar. Nunca siga veiculos,
-   confronte pessoas ou utilize a camera enquanto dirige.
+3. Use uma captura autorizada. Nunca siga veiculos, confronte pessoas ou
+   utilize a camera enquanto dirige.
    A previa e uma janela compacta horizontal, sem abrir em tela cheia.
    Se a camera disponibilizar zoom ao navegador, um controle aparece no painel;
    caso contrario, o app informa que ele nao esta disponivel. O zoom pode ser
    digital e nao garante novos detalhes nem leitura a distancia.
-4. A tela acompanha a abertura da camera. Toque em **Tirar foto**, no painel
-   junto da previa, e permita a localizacao. O botao fica desativado e mostra
-   **Obtendo GPS...** durante a espera para evitar capturas duplicadas.
-   O app solicita uma posicao nova e so captura a imagem depois de recebe-la.
-   Se o aparelho retornar uma posicao antiga, o app aguarda atualizacoes do GPS
-   por ate 25 segundos, sem usar o ponto antigo. A observacao e encerrada ao
-   obter uma posicao recente, negar permissao, sair da pagina ou atingir o prazo.
-   Posicoes com mais de 15 segundos de diferenca da captura continuam recusadas.
-5. O recorte da placa e processado por Tesseract.js 6.0.1 no navegador.
-   O app solicita video de ate 3840 x 2160 como preferencia, nao como garantia:
-   a resolucao efetiva depende do aparelho/navegador. O recorte acompanha a faixa
-   visivel, inclusive com camera em retrato, e preserva ate 2400 pixels de largura.
-   Tesseract e OCR generico, nao um detector especializado de placas distantes;
-   imagens desfocadas, pequenas, inclinadas ou com reflexo podem nao ser lidas.
-   A camera e desligada apos capturar. Revise a foto e o texto reconhecido.
-6. Confira ou corrija a placa, confira as coordenadas e a precisao estimada,
-   marque a confirmacao e clique em **Confirmar dados para o mapa**.
-7. Clique em **Carregar mapa online** para consultar o ponto do aparelho.
+4. Toque em **Tirar foto**. A imagem e congelada imediatamente e a camera e
+   desligada. O app solicita uma localizacao recente; se o GPS estiver procurando,
+   a foto ja aparece enquanto o app aguarda por ate 25 segundos. Posicoes com
+   mais de 15 segundos de diferenca da captura sao recusadas.
+5. O OCR esta desativado neste momento. Quando as coordenadas estiverem prontas,
+   **Baixar foto** salva a imagem no aparelho e **Preparar e-mail** abre o app de
+   e-mail com latitude, longitude, precisao e horario preenchidos para
+   `planejamarketing@gmail.com` e `rtechdigitais@gmail.com`.
+6. Anexe manualmente ao rascunho o arquivo baixado e envie. O navegador nao
+   consegue anexar ou enviar a foto automaticamente sem um backend/provedor
+   configurado; o envio so acontece depois da confirmacao no app de e-mail.
 
-A foto nao recebe coordenadas EXIF: a imagem recortada e as coordenadas ficam
-associadas em memoria nesta sessao. Nao ha upload da imagem, envio automatico
-para API, banco de dados ou exportacao persistente desse registro.
-**Descartar foto e dados** limpa a captura; sair da pagina desliga a camera.
-Este fluxo nao le fotos antigas da galeria nem seus metadados.
-
-O ponto representa a posicao do aparelho que capturou a foto, nao a posicao
-comprovada do veiculo. GPS pode ser impreciso ou adulterado. A tela informa
-a precisao estimada em metros; nao aplica um limite automatico de precisao.
-O OCR pode trocar caracteres ou nao encontrar placa: sem resultado unico,
-e preciso digitar/revisar a placa. Falhas de OCR permitem revisao manual da
-foto capturada; falhas de GPS impedem associar a foto ao mapa.
-
-O motor, o worker e os dados de idioma do OCR sao baixados de CDNs externos
-no primeiro uso, podendo exigir novos downloads depois. Esses provedores
-recebem dados de conexao (como IP), mas a aplicacao nao envia a foto, placa ou
-coordenadas a eles para reconhecimento. O mapa consulta outro provedor, apenas
-apos clique, conforme descrito acima. Camera e GPS dependem das permissoes do
-usuario e do suporte do navegador. Nao ha reconhecimento especializado de
-veiculos, consulta a cadastros, alertas de veiculo procurado ou rastreamento.
+A imagem e a localizacao ficam em memoria nesta sessao ate voce descartar ou
+sair da pagina. A foto nao recebe coordenadas EXIF. O app nao faz upload, nao
+armazena registros e nao abre o e-mail sem o seu toque. **Descartar foto e
+dados** limpa a captura. O ponto e a posicao do aparelho, nao comprova a
+posicao de um veiculo; o GPS pode ser impreciso ou adulterado. Use somente
+capturas autorizadas, nao siga veiculos nem confronte pessoas.
 
 Teste os modulos do navegador com Node.js:
 

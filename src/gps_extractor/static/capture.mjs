@@ -1,22 +1,24 @@
-import { calculateCaptureCrop, extractPlateCandidates, validateCapturePosition, normalizePlate, waitForCapturePosition } from "./capture-data.mjs";
+import {
+  buildPhotoEmailUrl,
+  calculatePhotoSize,
+  validateCapturePosition,
+  waitForCapturePosition,
+} from "./capture-data.mjs?v=20261020-photo-email";
 
-export function initializeCapture({ onInvalidate, onConfirm }) {
+export function initializeCapture({ onInvalidate }) {
   const video = document.querySelector("#camera-preview");
   const canvas = document.querySelector("#photo-preview");
   const startButton = document.querySelector("#start-camera");
   const captureButton = document.querySelector("#capture-photo");
   const cameraView = document.querySelector("#camera-view");
-  const cameraFeed = document.querySelector(".camera-feed");
   const captureLabel = document.querySelector("#capture-label");
   const stopButton = document.querySelector("#stop-camera");
   const clearButton = document.querySelector("#clear-photo");
   const status = document.querySelector("#capture-status");
   const review = document.querySelector("#photo-review");
-  const plateInput = document.querySelector("#photo-plate");
-  const rawText = document.querySelector("#ocr-text");
   const locationInfo = document.querySelector("#photo-location");
-  const confirmForm = document.querySelector("#confirm-photo");
-  const approved = document.querySelector("#confirm-location");
+  const downloadButton = document.querySelector("#download-photo");
+  const emailButton = document.querySelector("#email-photo");
   const zoomControl = document.querySelector("#camera-zoom");
   const zoomInput = document.querySelector("#zoom-level");
   const zoomValue = document.querySelector("#zoom-value");
@@ -81,10 +83,9 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     canvas.width = 0;
     canvas.height = 0;
     review.hidden = true;
-    plateInput.value = "";
-    rawText.value = "";
     locationInfo.textContent = "";
-    approved.checked = false;
+    downloadButton.disabled = true;
+    emailButton.disabled = true;
     onInvalidate();
   }
 
@@ -125,7 +126,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
       zoomControl.hidden = !supportsZoom;
       zoomHelp.textContent = supportsZoom
         ? "Zoom do aparelho: ajuste sem sair de um local seguro. Pode ser digital."
-        : "Zoom não disponível neste navegador. Se a placa não estiver legível, não se aproxime.";
+        : "Zoom não disponível neste navegador. Se a imagem não estiver nítida, não se aproxime.";
       if (supportsZoom) {
         zoomInput.min = String(zoom.min);
         zoomInput.max = String(zoom.max);
@@ -140,7 +141,7 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
         block: "center",
         behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
       });
-      notify("Enquadre somente a placa na faixa destacada e capture. A localização será solicitada nesse momento.");
+      notify("Enquadre a foto e capture. A localização será solicitada nesse momento.");
     } catch (error) {
       if (!isCurrent(operation)) return;
       stopCamera();
@@ -159,8 +160,19 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
   });
 
   clearButton.addEventListener("click", () => {
+    operationId += 1;
+    locationRequest?.abort();
+    locationRequest = null;
+    busy = false;
     clearPhoto();
-    notify("Foto, texto OCR e localização descartados desta sessão.");
+    captureButton.disabled = false;
+    zoomInput.disabled = false;
+    captureLabel.textContent = "Tirar foto";
+    cameraView.removeAttribute("aria-busy");
+    stopButton.disabled = false;
+    startButton.disabled = false;
+    clearButton.disabled = false;
+    notify("Foto e localização descartadas desta sessão.");
   });
 
   captureButton.addEventListener("click", async () => {
@@ -169,91 +181,66 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
     const operation = ++operationId;
     captureButton.disabled = true;
     zoomInput.disabled = true;
-    captureLabel.textContent = "Obtendo GPS…";
+    captureLabel.textContent = "Capturando...";
     cameraView.setAttribute("aria-busy", "true");
     stopButton.disabled = true;
     clearPhoto();
-    let worker = null;
     try {
-      notify("Obtendo a posição atual do aparelho. Mantenha a placa enquadrada...");
-      locationRequest = new AbortController();
-      const position = await waitForCapturePosition(navigator.geolocation, {
-        signal: locationRequest.signal,
-        onWaiting() {
-          if (isCurrent(operation)) {
-            notify("Atualizando o GPS… Mantenha a placa enquadrada. Isso pode levar até 25 segundos.");
-          }
-        },
-      });
-      if (!isCurrent(operation)) return;
       const capturedAt = Date.now();
-      const location = validateCapturePosition(position, capturedAt);
       if (!stream?.getVideoTracks().some((track) => track.readyState === "live") ||
           !video.videoWidth || !video.videoHeight || video.readyState < 2) {
         throw new Error("A câmera ainda não tem uma imagem disponível. Tente novamente.");
       }
-      const crop = calculateCaptureCrop(
-        video.videoWidth, video.videoHeight, video.clientWidth, video.clientHeight,
-      );
-      canvas.width = crop.outputWidth;
-      canvas.height = crop.outputHeight;
+      const photoSize = calculatePhotoSize(video.videoWidth, video.videoHeight);
+      canvas.width = photoSize.width;
+      canvas.height = photoSize.height;
       const context = canvas.getContext("2d");
       if (!context) throw new Error("O navegador não conseguiu preparar a foto.");
-      context.drawImage(video,
-        crop.x, crop.y, crop.width, crop.height, 0, 0, canvas.width, canvas.height);
-      record = { ...location, capturedAt };
+      context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight,
+        0, 0, canvas.width, canvas.height);
+      record = { capturedAt, captureId: operation };
       stopCamera();
       startButton.disabled = true;
       review.hidden = false;
       review.scrollIntoView({ block: "start", behavior: "instant" });
-      clearButton.disabled = true;
-      confirmForm.querySelector("button").disabled = true;
-      locationInfo.textContent =
-        `GPS do aparelho: ${location.latitude}, ${location.longitude}. ` +
-        `Precisão estimada: ±${Math.round(location.accuracy)} m. ` +
-        `Captura: ${new Date(capturedAt).toLocaleString("pt-BR")}.`;
-      notify("Carregando o motor OCR no aparelho. O primeiro uso pode levar alguns instantes...");
-      const { default: Tesseract } = await import(
-        "https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.esm.min.js"
-      );
-      if (!isCurrent(operation)) return;
-      worker = await Tesseract.createWorker("eng", 1, {
-        logger: (progress) => {
-          if (progress.status === "recognizing text" && isCurrent(operation)) {
-            notify(`Lendo a placa: ${Math.round(progress.progress * 100)}%...`);
-          }
-        },
-      });
-      if (!isCurrent(operation)) return;
-      await worker.setParameters({
-        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789- ",
-        tessedit_pageseg_mode: "7",
-      });
-      const result = await worker.recognize(canvas);
-      if (!isCurrent(operation)) return;
-      rawText.value = result.data.text;
-      const candidates = extractPlateCandidates(result.data.text);
-      plateInput.value = candidates.length === 1 ? candidates[0] : "";
-      notify(candidates.length === 1
-        ? "Leitura concluída. Confira a foto, corrija a placa se necessário e confirme a localização."
-        : "OCR concluído, mas não identificou uma placa única válida. Revise a foto e digite a placa; não será feita confirmação automática.");
+      downloadButton.disabled = false;
+      emailButton.disabled = true;
+      clearButton.disabled = false;
+      locationInfo.textContent = "Obtendo a posição do aparelho...";
+      notify("Foto capturada. Atualizando o GPS...");
+
+      locationRequest = new AbortController();
+      try {
+        const position = await waitForCapturePosition(navigator.geolocation, {
+          signal: locationRequest.signal,
+          onWaiting() {
+            if (isCurrent(operation)) {
+              notify("A foto já foi capturada. Atualizando o GPS; isso pode levar até 25 segundos.");
+            }
+          },
+        });
+        if (!isCurrent(operation)) return;
+        const location = validateCapturePosition(position, capturedAt);
+        record = { ...location, capturedAt, captureId: operation };
+        locationInfo.textContent =
+          `GPS do aparelho: ${location.latitude}, ${location.longitude}. ` +
+          `Precisão estimada: ±${Math.round(location.accuracy)} m. ` +
+          `Captura: ${new Date(capturedAt).toLocaleString("pt-BR")}.`;
+        emailButton.disabled = false;
+        notify("Foto e localização prontas. Baixe a foto e prepare o e-mail.");
+      } catch (error) {
+        if (!isCurrent(operation)) return;
+        locationInfo.textContent = `GPS não associado: ${error.message}`;
+        notify(`Foto salva, mas não foi possível obter um GPS recente: ${error.message}`, true);
+      }
     } catch (error) {
       if (!isCurrent(operation)) return;
       if (record) {
-        notify(`Falha no OCR: ${error.message}. Confira a foto e digite a placa manualmente, ou descarte e repita.`, true);
+        notify(`Foto capturada, mas houve uma falha ao obter a localização: ${error.message}.`, true);
       } else {
-        notify(`Captura cancelada: ${error.message}. A foto não será associada a coordenadas ausentes ou antigas.`, true);
+        notify(`Captura cancelada: ${error.message}.`, true);
       }
     } finally {
-      if (worker) {
-        try {
-          await worker.terminate();
-        } catch (error) {
-          if (isCurrent(operation)) {
-            notify(`Erro ao encerrar o OCR: ${error.message}. Recarregue a página antes de continuar.`, true);
-          }
-        }
-      }
       if (operation === operationId) {
         locationRequest = null;
         busy = false;
@@ -264,30 +251,44 @@ export function initializeCapture({ onInvalidate, onConfirm }) {
         stopButton.disabled = false;
         startButton.disabled = false;
         clearButton.disabled = false;
-        confirmForm.querySelector("button").disabled = false;
       }
     }
   });
 
-  for (const input of [plateInput, approved]) {
-    input.addEventListener("input", onInvalidate);
-  }
-  confirmForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (!record || busy) return;
-    const plate = normalizePlate(plateInput.value);
-    if (!plate || !approved.checked) {
-      notify("Informe uma placa brasileira válida e confirme a origem das coordenadas.", true);
-      return;
+  downloadButton.addEventListener("click", async () => {
+    if (!record) return;
+    const captureId = record.captureId;
+    const capturedAt = record.capturedAt;
+    downloadButton.disabled = true;
+    try {
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob((result) => {
+          if (result) resolve(result);
+          else reject(new Error("O navegador não conseguiu preparar o arquivo da foto."));
+        }, "image/jpeg", 0.92);
+      });
+      if (!record || record.captureId !== captureId) return;
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const extension = blob.type === "image/jpeg" ? "jpg" : "png";
+      link.download =
+        `foto-${new Date(capturedAt).toISOString().replaceAll(":", "-")}.${extension}`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      notify("Foto baixada. Anexe esse arquivo ao e-mail preparado.");
+    } catch (error) {
+      notify(`Não foi possível baixar a foto: ${error.message}`, true);
+    } finally {
+      downloadButton.disabled = !record;
     }
-    plateInput.value = plate;
-    onConfirm({
-      placa: plate,
-      latitude: String(record.latitude),
-      longitude: String(record.longitude),
-    }, `Foto revisada. GPS do aparelho na captura, precisão estimada ±${Math.round(record.accuracy)} m; ` +
-       `${new Date(record.capturedAt).toLocaleString("pt-BR")}. Não comprova a posição do veículo.`);
-    notify("Dados revisados. Use Carregar mapa online na seção de resultados para consultar o ponto.");
+  });
+
+  emailButton.addEventListener("click", () => {
+    if (!record || !Number.isFinite(record.latitude) || !Number.isFinite(record.longitude)) return;
+    window.location.href = buildPhotoEmailUrl(record);
   });
 
   window.addEventListener("pagehide", () => {

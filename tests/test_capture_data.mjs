@@ -6,6 +6,8 @@ import {
   validateCapturePosition,
   waitForCapturePosition,
   calculateCaptureCrop,
+  calculatePhotoSize,
+  buildPhotoEmailUrl,
 } from "../src/gps_extractor/static/capture-data.mjs";
 
 test("normalizes reviewed plates without guessing ambiguous characters", () => {
@@ -37,6 +39,26 @@ test("capture crop matches the visible guide for landscape and portrait cameras"
 
 test("capture crop rejects unavailable preview dimensions", () => {
   assert.throws(() => calculateCaptureCrop(1920, 1080, 0, 0), /Dimensões/);
+});
+
+test("photo dimensions preserve the full frame within the size limit", () => {
+  assert.deepEqual(calculatePhotoSize(3840, 2160), { width: 2400, height: 1350 });
+  assert.deepEqual(calculatePhotoSize(720, 1280), { width: 720, height: 1280 });
+  assert.throws(() => calculatePhotoSize(0, 1080), /Dimensões/);
+});
+
+test("prepares a mail draft for both recipients with the location and attachment reminder", () => {
+  const url = buildPhotoEmailUrl({
+    latitude: -25.4,
+    longitude: -49.2,
+    accuracy: 12.5,
+    capturedAt: new Date(2026, 9, 20, 12, 30).getTime(),
+  });
+  assert.match(url, /^mailto:planejamarketing@gmail\.com,rtechdigitais@gmail\.com\?/);
+  assert.match(decodeURIComponent(url), /Latitude: -25\.4/);
+  assert.match(decodeURIComponent(url), /Longitude: -49\.2/);
+  assert.match(decodeURIComponent(url), /Anexe manualmente o arquivo da foto/);
+  assert.throws(() => buildPhotoEmailUrl({}), /Coordenadas ou horário/);
 });
 
 test("waits for a fresh GPS update after a cached position and clears the watch", async () => {
